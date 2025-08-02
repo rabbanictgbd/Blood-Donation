@@ -1,67 +1,120 @@
+import { useContext, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { AuthContext } from "../context/AuthProvider"; // adjust path
 
 export default function Navbar() {
- const navItems = [
-  { path: "/", label: "Home", roles: ["guest", "donor", "volunteer", "admin"] },
-  { path: "/donation-requests", label: "Donation Requests", roles: ["donor", "volunteer", "admin"] },
-  { path: "/blogs", label: "Blogs", roles: ["guest", "donor", "volunteer", "admin"] },
-  { path: "/dashboard", label: "Dashboard", roles: ["donor", "volunteer", "admin"] },
-  { path: "/login", label: "Login", roles: ["guest"] },
-  { path: "/register", label: "Register", roles: ["guest"] },
-];
+  const { user, role } = useContext(AuthContext); // role will come from backend
+  const [menuOpen, setMenuOpen] = useState(false);
 
+  // Nav items based on role
+  const navConfig = {
+    guest: [
+      { path: "/", label: "Home" },
+      { path: "/blogs", label: "Blogs" },
+      { path: "/login", label: "Login" },
+      { path: "/register", label: "Register" },
+    ],
+    donor: [
+      { path: "/", label: "Home" },
+      { path: "/donation-requests", label: "My Requests" },
+      { path: "/create-donation-request", label: "Create Request" },
+      { path: "/dashboard", label: "Dashboard" },
+    ],
+    volunteer: [
+      { path: "/", label: "Home" },
+      { path: "/all-blood-donation-request", label: "All Requests" },
+      { path: "/dashboard", label: "Dashboard" },
+    ],
+    admin: [
+      { path: "/", label: "Home" },
+      { path: "/dashboard", label: "Dashboard" },
+      { path: "/all-users", label: "Users" },
+      { path: "/content-management", label: "Content" },
+    ],
+  };
+
+  const navItems = navConfig[role || "guest"];
 
   return (
-<div className="navbar bg-base-100 shadow-md px-5">
-  {/* Logo */}
-  <div className="flex-1">
-    <Link to="/" className="text-2xl font-bold text-red-600">🩸 Blood Donation</Link>
-  </div>
+    <div className="navbar bg-base-100 shadow-md px-5">
+      {/* Logo Left */}
+      <div className="flex-1">
+        <Link to="/" className="text-2xl font-bold text-red-600">
+          🩸 Blood Donation
+        </Link>
+      </div>
 
-  {/* Desktop Menu */}
-  <div className="hidden lg:flex">
-    <ul className="menu menu-horizontal px-1 gap-2">
-      {navItems.map(item => (
-        <li key={item.path}>
-          <NavLink
-            to={item.path}
-            className={({ isActive }) =>
-              `px-3 py-2 rounded-md ${
-                isActive ? "bg-red-100 text-red-600 font-semibold" : "hover:bg-gray-100"
-              }`
-            }
-          >
-            {item.label}
-          </NavLink>
-        </li>
-      ))}
-    </ul>
-  </div>
+      {/* Desktop Menu Right */}
+      <div className="flex-none hidden lg:flex">
+        <ul className="menu menu-horizontal px-1 gap-3">
+          {navItems.map((item) => (
+            <li key={item.path}>
+              <NavLink
+                to={item.path}
+                className={({ isActive }) =>
+                  `px-3 py-2 rounded-md ${
+                    isActive
+                      ? "bg-red-100 text-red-600 font-semibold"
+                      : "hover:bg-gray-100"
+                  }`
+                }
+              >
+                {item.label}
+              </NavLink>
+            </li>
+          ))}
 
-  {/* Mobile Menu */}
-  <div className="dropdown lg:hidden">
-    <div tabIndex={0} role="button" className="btn btn-ghost">
-      ☰
+          {user && (
+            <li>
+              <button className="btn btn-sm btn-error text-white">
+                Logout
+              </button>
+            </li>
+          )}
+        </ul>
+      </div>
+
+      {/* Mobile Menu */}
+      <div className="flex-none lg:hidden">
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="btn btn-ghost text-xl"
+        >
+          ☰
+        </button>
+      </div>
+
+      {/* Mobile Dropdown */}
+      {menuOpen && (
+        <div className="absolute top-16 right-4 bg-white shadow-lg rounded-lg p-3 w-48 lg:hidden z-50">
+          <ul className="flex flex-col gap-2">
+            {navItems.map((item) => (
+              <li key={item.path}>
+                <NavLink
+                  to={item.path}
+                  onClick={() => setMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `block px-3 py-2 rounded-md ${
+                      isActive
+                        ? "bg-red-100 text-red-600 font-semibold"
+                        : "hover:bg-gray-100"
+                    }`
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              </li>
+            ))}
+            {user && (
+              <li>
+                <button className="btn btn-error btn-sm text-white w-full">
+                  Logout
+                </button>
+              </li>
+            )}
+          </ul>
+        </div>
+      )}
     </div>
-    <ul
-      tabIndex={0}
-      className="menu menu-sm dropdown-content bg-base-100 rounded-box shadow mt-3 z-[1] w-52 p-2"
-    >
-      {navItems.map(item => (
-        <li key={item.path}>
-          <NavLink
-            to={item.path}
-            className={({ isActive }) =>
-              isActive ? "text-red-500 font-bold" : ""
-            }
-          >
-            {item.label}
-          </NavLink>
-        </li>
-      ))}
-    </ul>
-  </div>
-</div>
-
   );
 }
