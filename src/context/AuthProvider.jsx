@@ -1,24 +1,48 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
+import { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged 
+} from "firebase/auth";
+import { auth } from "../firebase.config";
 
+// Create context
 export const AuthContext = createContext();
 
 export default function AuthProvider({ children }) {
-  // Temporary role: change this to test (guest, donor, volunteer, admin)
-  const [role, setRole] = useState("guest");
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const login = (mockUser, mockRole) => {
-    setUser(mockUser);
-    setRole(mockRole);
+  // Register user
+  const register = (email, password) => {
+    setLoading(true);
+    return createUserWithEmailAndPassword(auth, email, password);
   };
 
+  // Login user
+  const login = (email, password) => {
+    setLoading(true);
+    return signInWithEmailAndPassword(auth, email, password);
+  };
+
+  // Logout user
   const logout = () => {
-    setUser(null);
-    setRole("guest");
+    setLoading(true);
+    return signOut(auth);
   };
+
+  // Track auth state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user, role, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, register, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
