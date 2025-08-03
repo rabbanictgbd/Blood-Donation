@@ -1,9 +1,25 @@
-import { Link } from "react-router-dom";
+import { useContext, useState } from "react";
+import { AuthContext } from "../context/AuthProvider";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const handleLogin = (e) => {
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [error, setError] = useState("");
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    alert("Login submitted (backend coming soon)");
+    setError("");
+    
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+
+    try {
+      await login(email, password);
+      navigate("/dashboard"); // Redirect after login
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (
@@ -13,23 +29,11 @@ export default function Login() {
       </h2>
 
       <form onSubmit={handleLogin} className="space-y-4">
-        {/* Email */}
-        <input
-          type="email"
-          placeholder="Email"
-          className="input input-bordered w-full"
-          required
-        />
+        <input name="email" type="email" placeholder="Email" className="input input-bordered w-full" required />
+        <input name="password" type="password" placeholder="Password" className="input input-bordered w-full" required />
+        
+        {error && <p className="text-red-500 text-sm">{error}</p>}
 
-        {/* Password */}
-        <input
-          type="password"
-          placeholder="Password"
-          className="input input-bordered w-full"
-          required
-        />
-
-        {/* Submit Button */}
         <button type="submit" className="btn btn-error w-full text-white">
           Login
         </button>
