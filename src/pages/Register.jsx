@@ -25,48 +25,72 @@ export default function Register() {
     setUpazilas(upazilaData[selected] || []);
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
 
-  const name = e.target.name.value;
-  const email = e.target.email.value;
-  const password = e.target.password.value;
-  const confirmPassword = e.target.confirmPassword.value;
-  const bloodGroup = e.target.bloodGroup.value;
-  const districtValue = e.target.district.value;
-  const upazila = e.target.upazila.value;
+    const name = e.target.name.value;
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    const confirmPassword = e.target.confirmPassword.value;
+    const bloodGroup = e.target.bloodGroup.value;
+    const districtValue = e.target.district.value;
+    const upazila = e.target.upazila.value;
+    const imageFile = e.target.image.files[0];
 
-  if (password !== confirmPassword) {
-    Swal.fire("Error", "Passwords do not match!", "error");
-    return;
-  }
-
-  try {
-    // Step 1: Save to MongoDB via your custom Express API
-    const res = await fetch("http://localhost:3000/api/users", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password, bloodGroup, district: districtValue, upazila }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      Swal.fire("Error", data.message || "Failed to save to MongoDB", "error");
+    if (password !== confirmPassword) {
+      Swal.fire("Error", "Passwords do not match!", "error");
       return;
     }
 
-    // Step 2: If MongoDB save succeeded, now create Firebase Auth account
-    await register(email, password, name);
+    try {
+      // Step 1: Upload image to ImageBB
+      const formData = new FormData();
+      formData.append("image", imageFile);
 
-    Swal.fire("Success", "Registration successful!", "success");
-    navigate("/dashboard");
+      const imgUploadRes = await fetch(
+        `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_API_KEY}`,
+        {
+          method: "POST",
+          body: formData
+        }
+      );
 
-  } catch (err) {
-    Swal.fire("Error", err.message, "error");
-  }
-};
+
+      const imgData = await imgUploadRes.json();
+      if (!imgData.success) {
+        Swal.fire("Error", "Image upload failed", "error");
+        return;
+      }
+      const imageUrl = imgData.data.url;
+
+      // Step 2: Save user to MongoDB
+      const res = await fetch("http://localhost:3000/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          bloodGroup,
+          district: districtValue,
+          upazila,
+          image: imageUrl
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        Swal.fire("Success", "Registration successful!", "success");
+        
+      } else {
+        Swal.fire("Error", data.message || "Registration failed", "error");
+      }
+
+    } catch (err) {
+      Swal.fire("Error", err.message, "error");
+    }
+  };
 
 
   return (
@@ -96,7 +120,13 @@ export default function Register() {
           {upazilas.map((upa) => <option key={upa}>{upa}</option>)}
         </select>
 
-        <input type="file" className="file-input file-input-bordered w-full" accept="image/*" />
+        <input
+          name="image"   // 👈 This is the important part
+          type="file"
+          className="file-input file-input-bordered w-full"
+          accept="image/*"
+          required
+        />
 
         {error && <p className="text-red-500 text-sm">{error}</p>}
 
