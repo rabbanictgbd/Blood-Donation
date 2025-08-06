@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthProvider";
 import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 export default function Register() {
   const { register } = useContext(AuthContext);
@@ -24,31 +25,49 @@ export default function Register() {
     setUpazilas(upazilaData[selected] || []);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
 
-    const name = e.target.name.value;
-    const email = e.target.email.value;
-    const password = e.target.password.value;
-    const confirmPassword = e.target.confirmPassword.value;
-    const bloodGroup = e.target.bloodGroup.value;
-    const districtValue = e.target.district.value;
-    const upazila = e.target.upazila.value;
+  const name = e.target.name.value;
+  const email = e.target.email.value;
+  const password = e.target.password.value;
+  const confirmPassword = e.target.confirmPassword.value;
+  const bloodGroup = e.target.bloodGroup.value;
+  const districtValue = e.target.district.value;
+  const upazila = e.target.upazila.value;
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match!");
+  if (password !== confirmPassword) {
+    Swal.fire("Error", "Passwords do not match!", "error");
+    return;
+  }
+
+  try {
+    // Step 1: Save to MongoDB via your custom Express API
+    const res = await fetch("http://localhost:3000/api/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password, bloodGroup, district: districtValue, upazila }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      Swal.fire("Error", data.message || "Failed to save to MongoDB", "error");
       return;
     }
 
-    try {
-      await register(email, password, name); // Calls AuthProvider register()
-      console.log("Registered:", { name, email, bloodGroup, districtValue, upazila });
-      navigate("/dashboard");
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+    // Step 2: If MongoDB save succeeded, now create Firebase Auth account
+    await register(email, password, name);
+
+    Swal.fire("Success", "Registration successful!", "success");
+    navigate("/dashboard");
+
+  } catch (err) {
+    Swal.fire("Error", err.message, "error");
+  }
+};
+
 
   return (
     <div className="max-w-lg mx-auto bg-base-100 shadow-lg p-6 rounded-lg">
