@@ -2,6 +2,7 @@ import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthProvider";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import DistrictUpazilaSelector from "../components/DistrictUpazilaSelector";
 
 export default function Register() {
   const { register } = useContext(AuthContext);
@@ -109,6 +110,8 @@ export default function Register() {
           <option disabled selected>Select Blood Group</option>
           {bloodGroups.map((bg) => <option key={bg}>{bg}</option>)}
         </select>
+
+        <DistrictUpazilaSelector></DistrictUpazilaSelector>
 
         <select name="district" className="select select-bordered w-full" required onChange={handleDistrictChange}>
           <option disabled selected>Select District</option>
