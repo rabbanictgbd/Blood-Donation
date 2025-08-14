@@ -38,6 +38,8 @@ export default function Register() {
     const districtValue = e.target.district.value;
     const upazila = e.target.upazila.value;
     const imageFile = e.target.image.files[0];
+    const status = "active";
+    const role = "donor";
 
     if (password !== confirmPassword) {
       Swal.fire("Error", "Passwords do not match!", "error");
@@ -76,7 +78,9 @@ export default function Register() {
           bloodGroup,
           district: districtValue,
           upazila,
-          image: imageUrl
+          image: imageUrl,
+          status,
+          role,
         }),
       });
 
