@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useCallback } from "react";
 import { AuthContext } from "../context/AuthProvider";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -8,16 +8,39 @@ export default function Register() {
   const { register } = useContext(AuthContext);
   const navigate = useNavigate();
 
-   const [location, setLocation] = useState({ district: "", upazila: "" });
+  const [location, setLocation] = useState({ district: "", upazila: "" });
+  const handleLocationChange = useCallback((loc) => {
+    setLocation(loc);
+  }, []);
+
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
 
   const [error, setError] = useState("");
 
   const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
+  const handleEmailBlur = async () => {
+    if (!email) return;
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/users/${email}`);
+      const data = await res.json();
+
+      if (data) {
+        setEmailError("Email already registered!");
+      } else {
+        setEmailError("");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    // if (emailError) return; // Stop submit if duplicate
 
     const name = e.target.name.value;
     const email = e.target.email.value;
@@ -27,6 +50,14 @@ export default function Register() {
     const imageFile = e.target.image.files[0];
     const status = "active";
     const role = "donor";
+
+    const res = await fetch(`http://localhost:3000/api/users/${email}`);
+    const existingUser = await res.json();
+
+    if (existingUser) {
+      Swal.fire("Error", "Email already registered!", "error");
+      return;
+    }
 
     if (password !== confirmPassword) {
       Swal.fire("Error", "Passwords do not match!", "error");
@@ -74,6 +105,7 @@ export default function Register() {
       const data = await res.json();
       if (res.ok) {
         Swal.fire("Success", "Registration successful!", "success");
+        register(email, password)
 
       } else {
         Swal.fire("Error", data.message || "Registration failed", "error");
@@ -93,7 +125,9 @@ export default function Register() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <input name="name" type="text" placeholder="Full Name" className="input input-bordered w-full" required />
-        <input name="email" type="email" placeholder="Email" className="input input-bordered w-full" required />
+        <input name="email" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} onBlur={handleEmailBlur} className={`input input-bordered w-full ${emailError ? "border-red-500" : ""}`} required />
+        {console.log(email)}
+        {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
         <input name="password" type="password" placeholder="Password" className="input input-bordered w-full" required />
         <input name="confirmPassword" type="password" placeholder="Confirm Password" className="input input-bordered w-full" required />
 
@@ -102,8 +136,11 @@ export default function Register() {
           {bloodGroups.map((bg) => <option key={bg}>{bg}</option>)}
         </select>
 
-       <DistrictUpazilaSelector onChange={(values) => setLocation(values)} />
-
+        <DistrictUpazilaSelector
+          defaultDistrict=""
+          defaultUpazila=""
+          onChange={handleLocationChange}
+        />
 
         <input
           name="image"   // 👈 This is the important part
@@ -115,7 +152,7 @@ export default function Register() {
 
         {error && <p className="text-red-500 text-sm">{error}</p>}
 
-        <button type="submit" className="btn btn-error w-full text-white">Register</button>
+        <button type="submit" disabled={!!emailError} className="btn btn-error w-full text-white">Register</button>
       </form>
 
       <p className="text-center mt-4">
