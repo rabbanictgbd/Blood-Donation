@@ -8,23 +8,12 @@ export default function Register() {
   const { register } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const [district, setDistrict] = useState("");
-  const [upazilas, setUpazilas] = useState([]);
+   const [location, setLocation] = useState({ district: "", upazila: "" });
+
   const [error, setError] = useState("");
 
   const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
-  const districts = ["Dhaka", "Chattogram", "Rajshahi"];
-  const upazilaData = {
-    Dhaka: ["Dhanmondi", "Gulshan", "Mirpur"],
-    Chattogram: ["Pahartali", "Panchlaish", "Kotwali"],
-    Rajshahi: ["Boalia", "Motihar", "Rajpara"],
-  };
 
-  const handleDistrictChange = (e) => {
-    const selected = e.target.value;
-    setDistrict(selected);
-    setUpazilas(upazilaData[selected] || []);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,8 +24,6 @@ export default function Register() {
     const password = e.target.password.value;
     const confirmPassword = e.target.confirmPassword.value;
     const bloodGroup = e.target.bloodGroup.value;
-    const districtValue = e.target.district.value;
-    const upazila = e.target.upazila.value;
     const imageFile = e.target.image.files[0];
     const status = "active";
     const role = "donor";
@@ -76,8 +63,8 @@ export default function Register() {
           email,
           password,
           bloodGroup,
-          district: districtValue,
-          upazila,
+          district: location.district,
+          upazila: location.upazila,
           image: imageUrl,
           status,
           role,
@@ -87,7 +74,7 @@ export default function Register() {
       const data = await res.json();
       if (res.ok) {
         Swal.fire("Success", "Registration successful!", "success");
-        
+
       } else {
         Swal.fire("Error", data.message || "Registration failed", "error");
       }
@@ -115,17 +102,8 @@ export default function Register() {
           {bloodGroups.map((bg) => <option key={bg}>{bg}</option>)}
         </select>
 
-        <DistrictUpazilaSelector></DistrictUpazilaSelector>
+       <DistrictUpazilaSelector onChange={(values) => setLocation(values)} />
 
-        <select name="district" className="select select-bordered w-full" required onChange={handleDistrictChange}>
-          <option disabled selected>Select District</option>
-          {districts.map((dist) => <option key={dist}>{dist}</option>)}
-        </select>
-
-        <select name="upazila" className="select select-bordered w-full" required>
-          <option disabled selected>Select Upazila</option>
-          {upazilas.map((upa) => <option key={upa}>{upa}</option>)}
-        </select>
 
         <input
           name="image"   // 👈 This is the important part
