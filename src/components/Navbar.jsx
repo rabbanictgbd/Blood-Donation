@@ -3,7 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import { AuthContext } from "../context/AuthProvider"; // adjust path
 
 export default function Navbar() {
-  const { user, role } = useContext(AuthContext); // role will come from backend
+  const { user, role, logout } = useContext(AuthContext); // role will come from backend
   const [menuOpen, setMenuOpen] = useState(false);
 
   // Nav items based on role
@@ -34,6 +34,9 @@ export default function Navbar() {
   };
 
   const navItems = navConfig[role || "guest"];
+  const handleLogout = () => {
+    logout()
+  }
 
   return (
     <div className="navbar bg-base-100 shadow-md px-5">
@@ -52,10 +55,9 @@ export default function Navbar() {
               <NavLink
                 to={item.path}
                 className={({ isActive }) =>
-                  `px-3 py-2 rounded-md ${
-                    isActive
-                      ? "bg-red-100 text-red-600 font-semibold"
-                      : "hover:bg-gray-100"
+                  `px-3 py-2 rounded-md ${isActive
+                    ? "bg-red-100 text-red-600 font-semibold"
+                    : "hover:bg-gray-100"
                   }`
                 }
               >
@@ -66,11 +68,22 @@ export default function Navbar() {
 
           {user && (
             <li>
-              <button className="btn btn-sm btn-error text-white">
-                Logout
-              </button>
+              <div className="dropdown dropdown-hover dropdown-end">
+                <label tabIndex={0} className="btn btn-sm btn-error text-white m-1 cursor-pointer">
+                  {user.email}
+                </label>
+                <ul
+                  tabIndex={0}
+                  className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+                >
+                  <li><a href="/profile">Profile</a></li>
+                  <li><a href="/dashboard">Dashboard</a></li>
+                  <li><button onClick={handleLogout}>Logout</button></li>
+                </ul>
+              </div>
             </li>
           )}
+
         </ul>
       </div>
 
@@ -94,10 +107,9 @@ export default function Navbar() {
                   to={item.path}
                   onClick={() => setMenuOpen(false)}
                   className={({ isActive }) =>
-                    `block px-3 py-2 rounded-md ${
-                      isActive
-                        ? "bg-red-100 text-red-600 font-semibold"
-                        : "hover:bg-gray-100"
+                    `block px-3 py-2 rounded-md ${isActive
+                      ? "bg-red-100 text-red-600 font-semibold"
+                      : "hover:bg-gray-100"
                     }`
                   }
                 >

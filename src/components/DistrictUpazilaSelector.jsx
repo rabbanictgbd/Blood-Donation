@@ -31,23 +31,20 @@ const DistrictUpazilaSelector = ({ defaultDistrict = "", defaultUpazila = "", on
     enabled: !!selectedDistrict,
   });
 
-  // Emit changes to parent
+  // Emit changes only when selection changes
   useEffect(() => {
-    if (onChange) {
-      onChange({ district: selectedDistrict, upazila: selectedUpazila });
-    }
-  }, [selectedDistrict, selectedUpazila, onChange]);
+    onChange?.({ district: selectedDistrict, upazila: selectedUpazila });
+  }, [selectedDistrict, selectedUpazila]); // no unnecessary deps
 
   return (
     <div className="space-y-4">
-      {/* District Dropdown */}
       <div>
         <label className="font-semibold">Select District</label>
         <select
           className="select select-bordered w-full"
           onChange={(e) => {
             setSelectedDistrict(e.target.value);
-            setSelectedUpazila(""); // reset upazila when district changes
+            setSelectedUpazila(""); // reset upazila
           }}
           value={selectedDistrict}
         >
@@ -64,7 +61,6 @@ const DistrictUpazilaSelector = ({ defaultDistrict = "", defaultUpazila = "", on
         </select>
       </div>
 
-      {/* Upazila Dropdown */}
       {selectedDistrict && (
         <div>
           <label className="font-semibold">Select Upazila</label>
