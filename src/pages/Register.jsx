@@ -18,6 +18,12 @@ export default function Register() {
   const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
   // Check email before submit
+  const handleEmailChange= async(e) => {
+    const value= e.target.value
+     setEmail(value)
+
+  }
+  
   const handleEmailBlur = async () => {
     if (!email) return;
     try {
@@ -27,6 +33,7 @@ export default function Register() {
     } catch (err) {
       console.error(err);
     }
+    
   };
 
   const handleSubmit = async (e) => {
@@ -76,7 +83,7 @@ export default function Register() {
       // Firebase user creation
       await register(email, password);
       Swal.fire("Success", "Registration successful! You can now login.", "success");
-      navigate("/login");
+      // navigate("/login");
     } catch (err) {
       Swal.fire("Error", err.message, "error");
     }
@@ -96,7 +103,7 @@ export default function Register() {
           type="email"
           placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={handleEmailChange}
           onBlur={handleEmailBlur}
           className={`input input-bordered w-full ${emailError ? "border-red-500" : ""}`}
           required
@@ -107,7 +114,7 @@ export default function Register() {
         <input name="confirmPassword" type="password" placeholder="Confirm Password" className="input input-bordered w-full" required />
 
         <select name="bloodGroup" className="select select-bordered w-full" required>
-          <option value="" disabled>Select Blood Group</option>
+          <option value="">Select Blood Group</option>
           {bloodGroups.map((bg) => <option key={bg} value={bg}>{bg}</option>)}
         </select>
 
