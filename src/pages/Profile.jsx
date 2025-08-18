@@ -1,114 +1,111 @@
-import { useState, useEffect } from "react";
+import { useState, useContext, useCallback } from "react";
+import { AuthContext } from "../context/AuthProvider";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
+import DistrictUpazilaSelector from "../components/DistrictUpazilaSelector";
 
 export default function Profile() {
-  const [user, setUser] = useState(null); // store user data
-  const [isEditing, setIsEditing] = useState(false); // toggle edit mode
-  const [formData, setFormData] = useState({}); // for form state
+  const { user } = useContext(AuthContext);
+  const queryClient = useQueryClient();
 
-  // fetch user (example: logged-in user’s email comes from localStorage/session)
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await fetch("http://localhost:3000/api/users/me", {
-          credentials: "include", // if cookie-based auth
-        });
-        const data = await res.json();
-        setUser(data);
-        setFormData(data);
-      } catch (err) {
-        console.error("Failed to fetch user:", err);
-      }
-    };
-    fetchUser();
-  }, []);
+  const [isEditing, setIsEditing] = useState(false);
+  const [location, setLocation] = useState({ district: "", upazila: "" });
+  const handleLocationChange = useCallback((loc) => setLocation(loc), []);
 
-  // handle input change
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+  // ✅ Fetch current user from backend
+  const { data: profile, isLoading } = useQuery({
+    queryKey: ["user", user?.email],
+    queryFn: async () => {
+      const res = await fetch(`http://localhost:3000/api/users/${user?.email}`);
+      if (!res.ok) throw new Error("Failed to fetch user profile");
+      return res.json();
+    },
+    enabled: !!user?.email, // only run if email exists
+  });
 
-  // handle save
-  const handleSave = async () => {
-    try {
-      const res = await fetch(`http://localhost:3000/api/users/${user.email}`, {
+  // ✅ Mutation to update profile
+  const updateMutation = useMutation({
+    mutationFn: async (updatedUser) => {
+      const res = await fetch(`http://localhost:3000/api/users/${profile.email}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(updatedUser),
       });
-      const data = await res.json();
+      if (!res.ok) throw new Error("Update failed");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["user", user?.email]); // refresh user data
+      setIsEditing(false);
+      Swal.fire("Success", "Profile updated successfully!", "success");
+    },
+    onError: (err) => Swal.fire("Error", err.message, "error"),
+  });
 
-      if (res.ok) {
-        Swal.fire("Success", "Profile updated successfully!", "success");
-        setUser(data); // update local user state
-        setIsEditing(false); // switch back to read-only
-      } else {
-        Swal.fire("Error", data.message || "Failed to update profile", "error");
-      }
-    } catch (err) {
-      Swal.fire("Error", err.message, "error");
-    }
+  if (isLoading) return <p className="text-center">Loading...</p>;
+  if (!profile) return <p className="text-center">No profile found.</p>;
+
+  // ✅ Submit Handler
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    updateMutation.mutate({
+      name: form.name.value,
+      bloodGroup: form.bloodGroup.value,
+      district: location.district || profile.district,
+      upazila: location.upazila || profile.upazila,
+      image: profile.image,
+    });
   };
-
-  if (!user) return <p>Loading profile...</p>;
 
   return (
     <div className="max-w-lg mx-auto bg-base-100 shadow-lg p-6 rounded-lg">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-red-600">My Profile</h2>
-        {!isEditing ? (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="btn btn-sm btn-warning"
-          >
-            Edit
-          </button>
-        ) : (
-          <button onClick={handleSave} className="btn btn-sm btn-success">
-            Save
-          </button>
-        )}
+      <h2 className="text-2xl font-bold text-center mb-4 text-red-600">
+        My Profile 🩸
+      </h2>
+
+      <div className="flex justify-center mb-4">
+        <img
+          className="rounded-full w-24 h-24 object-cover"
+          src={profile.image}
+          alt="avatar"
+        />
       </div>
 
-      <form className="space-y-4">
-        {/* Avatar */}
-        <div className="flex items-center space-x-4">
-          <img
-            src={user.image}
-            alt="avatar"
-            className="w-16 h-16 rounded-full border"
-          />
-        </div>
+      {/* ✅ Edit Button */}
+      {!isEditing ? (
+        <button
+          onClick={() => setIsEditing(true)}
+          className="btn btn-primary btn-sm mb-4"
+        >
+          Edit
+        </button>
+      ) : null}
 
-        {/* Name */}
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
-          type="text"
           name="name"
-          value={formData.name || ""}
-          onChange={handleChange}
+          type="text"
+          defaultValue={profile.name}
           className="input input-bordered w-full"
           disabled={!isEditing}
         />
 
-        {/* Email (not editable) */}
         <input
-          type="email"
           name="email"
-          value={formData.email || ""}
+          type="email"
+          value={profile.email}
           className="input input-bordered w-full bg-gray-100"
           disabled
         />
 
-        {/* Blood Group */}
         <select
           name="bloodGroup"
-          value={formData.bloodGroup || ""}
-          onChange={handleChange}
+          defaultValue={profile.bloodGroup}
           className="select select-bordered w-full"
           disabled={!isEditing}
         >
-          <option disabled>Select Blood Group</option>
+          <option value="">Select Blood Group</option>
           {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((bg) => (
             <option key={bg} value={bg}>
               {bg}
@@ -116,25 +113,18 @@ export default function Profile() {
           ))}
         </select>
 
-        {/* District */}
-        <input
-          type="text"
-          name="district"
-          value={formData.district || ""}
-          onChange={handleChange}
-          className="input input-bordered w-full"
+        <DistrictUpazilaSelector
+          defaultDistrict={profile.district}
+          defaultUpazila={profile.upazila}
+          onChange={handleLocationChange}
           disabled={!isEditing}
         />
 
-        {/* Upazila */}
-        <input
-          type="text"
-          name="upazila"
-          value={formData.upazila || ""}
-          onChange={handleChange}
-          className="input input-bordered w-full"
-          disabled={!isEditing}
-        />
+        {isEditing && (
+          <button type="submit" className="btn btn-success w-full">
+            Save
+          </button>
+        )}
       </form>
     </div>
   );
