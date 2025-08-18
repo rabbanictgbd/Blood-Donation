@@ -16,7 +16,7 @@ export default function Profile() {
   const { data: profile, isLoading } = useQuery({
     queryKey: ["user", user?.email],
     queryFn: async () => {
-      const res = await fetch(`http://localhost:3000/api/users/${user?.email}`);
+      const res = await fetch(`http://localhost:3000/api/users/${user.email}`);
       if (!res.ok) throw new Error("Failed to fetch user profile");
       return res.json();
     },
@@ -26,7 +26,7 @@ export default function Profile() {
   // ✅ Mutation to update profile
   const updateMutation = useMutation({
     mutationFn: async (updatedUser) => {
-      const res = await fetch(`http://localhost:3000/api/users/${profile.email}`, {
+      const res = await fetch(`http://localhost:3000/api/users/${user.email}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedUser),
@@ -60,27 +60,33 @@ export default function Profile() {
 
   return (
     <div className="max-w-lg mx-auto bg-base-100 shadow-lg p-6 rounded-lg">
+      <div>
+        {/* ✅ Edit Button */}
+        {!isEditing ? (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="btn btn-primary btn-sm mb-4"
+          >
+            Edit
+          </button>
+        ) :
+          <button onClick={() => setIsEditing(false)} className="btn btn-secondary" >Cancel</button>}
+      </div>
+      {/* ✅ Profile Form */}
       <h2 className="text-2xl font-bold text-center mb-4 text-red-600">
         My Profile 🩸
       </h2>
 
-      <div className="flex justify-center mb-4">
-        <img
-          className="rounded-full w-24 h-24 object-cover"
-          src={profile.image}
-          alt="avatar"
-        />
-      </div>
+      {!isEditing ?
 
-      {/* ✅ Edit Button */}
-      {!isEditing ? (
-        <button
-          onClick={() => setIsEditing(true)}
-          className="btn btn-primary btn-sm mb-4"
-        >
-          Edit
-        </button>
-      ) : null}
+        <div className="flex justify-center mb-4">
+          <img
+            className="rounded-full w-24 h-24 object-cover"
+            src={profile.image}
+            alt="avatar"
+          />
+        </div>
+        : <button>pic</button>}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
