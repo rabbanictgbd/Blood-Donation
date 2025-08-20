@@ -10,6 +10,9 @@ export default function Profile() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [location, setLocation] = useState({ district: "", upazila: "" });
+  const [preview, setPreview] = useState(null); // ✅ preview for uploaded image
+  const [file, setFile] = useState(null); // ✅ selected file
+
   const handleLocationChange = useCallback((loc) => setLocation(loc), []);
 
   // ✅ Fetch current user from backend
@@ -20,7 +23,7 @@ export default function Profile() {
       if (!res.ok) throw new Error("Failed to fetch user profile");
       return res.json();
     },
-    enabled: !!user?.email, // only run if email exists
+    enabled: !!user?.email,
   });
 
   // ✅ Mutation to update profile
@@ -35,7 +38,7 @@ export default function Profile() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["user", user?.email]); // refresh user data
+      queryClient.invalidateQueries(["user", user?.email]);
       setIsEditing(false);
       Swal.fire("Success", "Profile updated successfully!", "success");
     },
@@ -45,23 +48,51 @@ export default function Profile() {
   if (isLoading) return <p className="text-center">Loading...</p>;
   if (!profile) return <p className="text-center">No profile found.</p>;
 
+  // ✅ Handle File Upload (preview + store file)
+  const handleFileChange = (e) => {
+    const selected = e.target.files[0];
+    setFile(selected);
+    if (selected) {
+      setPreview(URL.createObjectURL(selected));
+    }
+  };
+
   // ✅ Submit Handler
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
+
+    let imageUrl = profile.image;
+
+    // (Optional) Upload to your image hosting service (Cloudinary, imgbb, etc.)
+    if (file) {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      // Example using imgbb:
+      const uploadRes = await fetch(
+        `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_API_KEY}`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      const uploadData = await uploadRes.json();
+      imageUrl = uploadData.data.url;
+    }
+
     updateMutation.mutate({
       name: form.name.value,
       bloodGroup: form.bloodGroup.value,
       district: location.district || profile.district,
       upazila: location.upazila || profile.upazila,
-      image: profile.image,
+      image: imageUrl,
     });
   };
 
   return (
     <div className="max-w-lg mx-auto bg-base-100 shadow-lg p-6 rounded-lg">
-      <div>
-        {/* ✅ Edit Button */}
+      <div className="flex justify-end">
         {!isEditing ? (
           <button
             onClick={() => setIsEditing(true)}
@@ -69,25 +100,42 @@ export default function Profile() {
           >
             Edit
           </button>
-        ) :
-          <button onClick={() => setIsEditing(false)} className="btn btn-secondary" >Cancel</button>}
+        ) : (
+          <button
+            onClick={() => {
+              setIsEditing(false);
+              setPreview(null);
+              setFile(null);
+            }}
+            className="btn btn-secondary btn-sm mb-4"
+          >
+            Cancel
+          </button>
+        )}
       </div>
-      {/* ✅ Profile Form */}
+
       <h2 className="text-2xl font-bold text-center mb-4 text-red-600">
         My Profile 🩸
       </h2>
 
-      {!isEditing ?
-
-        <div className="flex justify-center mb-4">
-          <img
-            className="rounded-full w-24 h-24 object-cover"
-            src={profile.image}
-            alt="avatar"
+      {/* ✅ Profile Image */}
+      <div className="flex flex-col items-center mb-4">
+        <img
+          className="rounded-full w-24 h-24 object-cover border"
+          src={preview || profile.image}
+          alt="avatar"
+        />
+        {isEditing && (
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="mt-2 file-input file-input-bordered file-input-sm w-full max-w-xs"
           />
-        </div>
-        : <button>pic</button>}
+        )}
+      </div>
 
+      {/* ✅ Profile Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           name="name"

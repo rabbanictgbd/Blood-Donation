@@ -1,12 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
+// Fetch all districts
 const fetchDistricts = async () => {
   const res = await fetch("http://localhost:3000/api/districts");
   if (!res.ok) throw new Error("Failed to fetch districts");
   return res.json();
 };
 
+// Fetch upazilas by district
 const fetchUpazilas = async (districtId) => {
   if (!districtId) return [];
   const res = await fetch(`http://localhost:3000/api/upazilas/${districtId}`);
@@ -14,39 +16,46 @@ const fetchUpazilas = async (districtId) => {
   return res.json();
 };
 
-const DistrictUpazilaSelector = ({ defaultDistrict = "", defaultUpazila = "", onChange }) => {
+const DistrictUpazilaSelector = ({
+  defaultDistrict = "",
+  defaultUpazila = "",
+  onChange,
+  disabled,
+}) => {
   const [selectedDistrict, setSelectedDistrict] = useState(defaultDistrict);
   const [selectedUpazila, setSelectedUpazila] = useState(defaultUpazila);
 
-  // Districts
+  // Fetch districts
   const { data: districts = [], isLoading: loadingDistricts } = useQuery({
     queryKey: ["districts"],
     queryFn: fetchDistricts,
   });
 
-  // Upazilas
+  // Fetch upazilas based on district
   const { data: upazilas = [], isLoading: loadingUpazilas } = useQuery({
     queryKey: ["upazilas", selectedDistrict],
     queryFn: () => fetchUpazilas(selectedDistrict),
     enabled: !!selectedDistrict,
   });
 
-  // Emit changes only when selection changes
+  // Emit changes
   useEffect(() => {
     onChange?.({ district: selectedDistrict, upazila: selectedUpazila });
-  }, [selectedDistrict, selectedUpazila]); // no unnecessary deps
+  }, [selectedDistrict, selectedUpazila]);
 
   return (
     <div className="space-y-4">
+      {/* District Select */}
       <div>
-        <label className="font-semibold">Select District</label>
+        <label className="block mb-1 font-semibold">District</label>
         <select
           className="select select-bordered w-full"
+          value={selectedDistrict}
           onChange={(e) => {
             setSelectedDistrict(e.target.value);
-            setSelectedUpazila(""); // reset upazila
+            setSelectedUpazila(""); // reset when district changes
           }}
-          value={selectedDistrict}
+          disabled={disabled}
         >
           <option value="">-- Select a district --</option>
           {loadingDistricts ? (
@@ -61,13 +70,15 @@ const DistrictUpazilaSelector = ({ defaultDistrict = "", defaultUpazila = "", on
         </select>
       </div>
 
+      {/* Upazila Select */}
       {selectedDistrict && (
         <div>
-          <label className="font-semibold">Select Upazila</label>
+          <label className="block mb-1 font-semibold">Upazila</label>
           <select
             className="select select-bordered w-full"
             value={selectedUpazila}
             onChange={(e) => setSelectedUpazila(e.target.value)}
+            disabled={disabled}
           >
             <option value="">-- Select an upazila --</option>
             {loadingUpazilas ? (
