@@ -48,8 +48,14 @@ export default function AuthProvider({ children }) {
     return () => unsubscribe();
   }, []);
 
+  //Server api
+  const localServer= "http://localhost:3000"
+  const vercelServer= "https://b11a12-server-side-rabbanictgbd.vercel.app"
+  const serverApi= localServer
+  // const serverApi= vercelServer
+
   return (
-    <AuthContext.Provider value={{ user, loading, register, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, register, login, logout, serverApi }}>
       {children}
     </AuthContext.Provider>
   );

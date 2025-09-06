@@ -1,17 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../context/AuthProvider";
+
+
 
 // Fetch all districts
-const fetchDistricts = async () => {
-  const res = await fetch("http://localhost:3000/api/districts");
+const fetchDistricts = async (serverApi) => {
+  const res = await fetch(`${serverApi}/api/districts`);
   if (!res.ok) throw new Error("Failed to fetch districts");
   return res.json();
 };
 
 // Fetch upazilas by district
-const fetchUpazilas = async (districtId) => {
+const fetchUpazilas = async (serverApi, districtId) => {
   if (!districtId) return [];
-  const res = await fetch(`http://localhost:3000/api/upazilas/${districtId}`);
+  const res = await fetch(`${serverApi}/api/upazilas/${districtId}`);
   if (!res.ok) throw new Error("Failed to fetch upazilas");
   return res.json();
 };
@@ -22,26 +25,27 @@ const DistrictUpazilaSelector = ({
   onChange,
   disabled,
 }) => {
+  const { serverApi}= useContext(AuthContext)
   const [selectedDistrict, setSelectedDistrict] = useState(defaultDistrict);
   const [selectedUpazila, setSelectedUpazila] = useState(defaultUpazila);
 
   // Fetch districts
   const { data: districts = [], isLoading: loadingDistricts } = useQuery({
     queryKey: ["districts"],
-    queryFn: fetchDistricts,
+    queryFn: ()=> fetchDistricts(serverApi),
   });
 
   // Fetch upazilas based on district
   const { data: upazilas = [], isLoading: loadingUpazilas } = useQuery({
     queryKey: ["upazilas", selectedDistrict],
-    queryFn: () => fetchUpazilas(selectedDistrict),
+    queryFn: () => fetchUpazilas(serverApi, selectedDistrict),
     enabled: !!selectedDistrict,
   });
 
   // Emit changes
   useEffect(() => {
     onChange?.({ district: selectedDistrict, upazila: selectedUpazila });
-  }, [selectedDistrict, selectedUpazila]);
+  }, [selectedDistrict, selectedUpazila, onChange]);
 
   return (
     <div className="space-y-4">

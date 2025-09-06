@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 import DistrictUpazilaSelector from "../components/DistrictUpazilaSelector";
 
 export default function Profile() {
-  const { user } = useContext(AuthContext);
+  const { user, serverApi } = useContext(AuthContext);
   const queryClient = useQueryClient();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -19,7 +19,7 @@ export default function Profile() {
   const { data: profile, isLoading } = useQuery({
     queryKey: ["user", user?.email],
     queryFn: async () => {
-      const res = await fetch(`http://localhost:3000/api/users/${user.email}`);
+      const res = await fetch(`${serverApi}/api/users/${user.email}`);
       if (!res.ok) throw new Error("Failed to fetch user profile");
       return res.json();
     },
@@ -29,7 +29,7 @@ export default function Profile() {
   // ✅ Mutation to update profile
   const updateMutation = useMutation({
     mutationFn: async (updatedUser) => {
-      const res = await fetch(`http://localhost:3000/api/users/${user.email}`, {
+      const res = await fetch(`${serverApi}/api/users/${user.email}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedUser),

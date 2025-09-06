@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 import DistrictUpazilaSelector from "../components/DistrictUpazilaSelector";
 
 export default function Register() {
-  const { register } = useContext(AuthContext);
+  const { register, serverApi } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [location, setLocation] = useState({ district: "", upazila: "" });
@@ -27,7 +27,7 @@ export default function Register() {
   const handleEmailBlur = async () => {
     if (!email) return;
     try {
-      const res = await fetch(`http://localhost:3000/api/users/${email}`);
+      const res = await fetch(`${serverApi}/api/users/${email}`);
       const data = await res.json();
       setEmailError(data ? "Email already registered!" : "");
     } catch (err) {
@@ -68,7 +68,7 @@ export default function Register() {
       const imageUrl = imgData.data.url;
 
       // Save user to MongoDB
-      const res = await fetch("http://localhost:3000/api/users", {
+      const res = await fetch(`${serverApi}/api/users`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
