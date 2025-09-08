@@ -8,6 +8,7 @@ import Dashboard from '../pages/Dashboard'
 import Profile from '../pages/Profile'
 import { Routes, Route } from 'react-router-dom'
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 
 const Router = () => {
     return (
@@ -24,6 +25,7 @@ const Router = () => {
                     <Route path="/profile" element={<Profile />} />
                 </Routes>
             </div>
+            <Footer></Footer>
         </div>
     )
 }
