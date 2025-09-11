@@ -9,23 +9,28 @@ import Profile from '../pages/Profile'
 import { Routes, Route } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import MainLayout from '../layouts/MainLayout'
+import DashboardLayout from '../layouts/DashboardLayout'
+import PrivateRoutes from './PrivateRoutes'
 
 const Router = () => {
     return (
-        <div>
-            <Navbar></Navbar>
-            <div className="p-5">
-                <Routes>
+        <div className="p-5">
+            <Routes>
+                <Route element={<MainLayout />} >
                     <Route path="/" element={<Home />} />
                     <Route path="/donation-requests" element={<DonationRequests />} />
                     <Route path="/blogs" element={<Blogs />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/profile" element={<Profile />} />
-                </Routes>
-            </div>
-            <Footer></Footer>
+                </Route>
+                <Route element={<PrivateRoutes/>}>
+                    <Route element={<DashboardLayout />}>
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/profile" element={<Profile />} />
+                    </Route>
+                </Route>
+            </Routes>
         </div>
     )
 }
