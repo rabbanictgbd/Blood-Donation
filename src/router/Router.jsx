@@ -27,7 +27,7 @@ const Router = () => {
                 <Route element={<PrivateRoutes/>}>
                     <Route element={<DashboardLayout />}>
                         <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/profile" element={<Profile />} />
+                        <Route path="/dashboard/profile" element={<Profile />} />
                     </Route>
                 </Route>
             </Routes>

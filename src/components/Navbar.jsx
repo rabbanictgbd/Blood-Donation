@@ -13,23 +13,27 @@ export default function Navbar() {
       { path: "/blogs", label: "Blogs" },
       { path: "/login", label: "Login" },
       { path: "/register", label: "Register" },
+      { path: "/dashboard", label: "Dashboard" },
     ],
     donor: [
       { path: "/", label: "Home" },
       { path: "/donation-requests", label: "My Requests" },
       { path: "/create-donation-request", label: "Create Request" },
       { path: "/dashboard", label: "Dashboard" },
+      { path: "/dashboard/profile", label: "Profile" },
     ],
     volunteer: [
       { path: "/", label: "Home" },
       { path: "/all-blood-donation-request", label: "All Requests" },
       { path: "/dashboard", label: "Dashboard" },
+      { path: "/dashboard/profile", label: "Profile" },
     ],
     admin: [
       { path: "/", label: "Home" },
       { path: "/dashboard", label: "Dashboard" },
       { path: "/all-users", label: "Users" },
       { path: "/content-management", label: "Content" },
+      { path: "/dashboard/profile", label: "Profile" },
     ],
   };
 
