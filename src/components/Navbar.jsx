@@ -80,7 +80,7 @@ export default function Navbar() {
                   tabIndex={0}
                   className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
                 >
-                  <li><a href="/profile">Profile</a></li>
+                  <li><a href="dashboard/profile">Profile</a></li>
                   <li><a href="/dashboard">Dashboard</a></li>
                   <li><button onClick={handleLogout}>Logout</button></li>
                 </ul>

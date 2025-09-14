@@ -46,7 +46,7 @@ export default function Profile() {
   });
 
   if (isLoading) return <p className="text-center">Loading...</p>;
-  if (!profile) return <p className="text-center">No profile found.</p>;
+  if (!profile) return <p className="text-center">Loading..</p>;
 
   // ✅ Handle File Upload (preview + store file)
   const handleFileChange = (e) => {
