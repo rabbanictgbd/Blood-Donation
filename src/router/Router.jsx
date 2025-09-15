@@ -12,6 +12,7 @@ import Footer from '../components/Footer'
 import MainLayout from '../layouts/MainLayout'
 import DashboardLayout from '../layouts/DashboardLayout'
 import PrivateRoutes from './PrivateRoutes'
+import RequestBlood from '../pages/RequestBlood'
 
 const Router = () => {
     return (
@@ -20,6 +21,7 @@ const Router = () => {
                 <Route element={<MainLayout />} >
                     <Route path="/" element={<Home />} />
                     <Route path="/donation-requests" element={<DonationRequests />} />
+                    <Route path="/requests" element={<RequestBlood />} />
                     <Route path="/blogs" element={<Blogs />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />

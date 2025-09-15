@@ -14,6 +14,7 @@ export default function Navbar() {
       { path: "/login", label: "Login" },
       { path: "/register", label: "Register" },
       { path: "/dashboard", label: "Dashboard" },
+      { path: "/requests", label: "Request" },
     ],
     donor: [
       { path: "/", label: "Home" },
