@@ -13,6 +13,7 @@ import MainLayout from '../layouts/MainLayout'
 import DashboardLayout from '../layouts/DashboardLayout'
 import PrivateRoutes from './PrivateRoutes'
 import RequestBlood from '../pages/RequestBlood'
+import MyDonationRequests from '../pages/MyDonationRequests'
 
 const Router = () => {
     return (
@@ -30,6 +31,7 @@ const Router = () => {
                     <Route element={<DashboardLayout />}>
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/dashboard/profile" element={<Profile />} />
+                        <Route path="/my-donation-requests" element={<MyDonationRequests />} />
                     </Route>
                 </Route>
             </Routes>

@@ -110,7 +110,7 @@ export default function Register() {
         />
         {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
 
-        <input name="password" type="password" placeholder="Password" className="input input-bordered w-full" required />
+        <input name="password" type="password" placeholder="Password" className="input input-bordered w-full" required minLength={6} />
         <input name="confirmPassword" type="password" placeholder="Confirm Password" className="input input-bordered w-full" required />
 
         <select name="bloodGroup" className="select select-bordered w-full" required>

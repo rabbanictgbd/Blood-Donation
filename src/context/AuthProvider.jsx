@@ -7,12 +7,26 @@ import {
   updateProfile
 } from "firebase/auth";
 import { auth } from "../firebase.config";
+import { useQuery } from "@tanstack/react-query";
 
 export const AuthContext = createContext();
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(true);
   const [loading, setLoading] = useState(true);
+
+  // ✅ Fetch donor profile
+  const { data: profile } = useQuery({
+    queryKey: ["user", user?.email],
+    queryFn: async () => {
+      const res = await fetch(`${serverApi}/api/users/${user?.email}`);
+      if (!res.ok) throw new Error("Failed to fetch user profile");
+      return res.json();
+    },
+    enabled: !!user?.email,
+  });
+
+  const role=profile?.role
 
   // Register user with profile update
   const register = async (email, password, name, photoURL) => {
@@ -55,7 +69,7 @@ export default function AuthProvider({ children }) {
   const serverApi= vercelServer
 
   return (
-    <AuthContext.Provider value={{ user, loading, register, login, logout, serverApi }}>
+    <AuthContext.Provider value={{ user, role, loading, register, login, logout, serverApi }}>
       {children}
     </AuthContext.Provider>
   );
