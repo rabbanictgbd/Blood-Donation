@@ -14,6 +14,9 @@ import DashboardLayout from '../layouts/DashboardLayout'
 import PrivateRoutes from './PrivateRoutes'
 import RequestBlood from '../pages/RequestBlood'
 import MyDonationRequests from '../pages/MyDonationRequests'
+import DonationRequestForm from '../components/DonationRequestForm'
+import CreateRequest from '../pages/CreateRequest'
+import ViewRequest from '../pages/ViewRequest'
 
 const Router = () => {
     return (
@@ -22,7 +25,8 @@ const Router = () => {
                 <Route element={<MainLayout />} >
                     <Route path="/" element={<Home />} />
                     <Route path="/donation-requests" element={<DonationRequests />} />
-                    <Route path="/requests" element={<RequestBlood />} />
+                    {/* <Route path="/requests" element={<RequestBlood />} /> */}
+                    <Route path="/requests" element={<CreateRequest />} />
                     <Route path="/blogs" element={<Blogs />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
@@ -31,6 +35,7 @@ const Router = () => {
                     <Route element={<DashboardLayout />}>
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/dashboard/profile" element={<Profile />} />
+                        <Route path="/dashboard/view-request/:id" element={<ViewRequest />} />
                         <Route path="/my-donation-requests" element={<MyDonationRequests />} />
                     </Route>
                 </Route>

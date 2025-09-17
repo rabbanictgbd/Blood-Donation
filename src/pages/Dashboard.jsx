@@ -63,7 +63,7 @@ const Dashboard = () => {
     <div className="p-5">
       {/* ✅ Greeting */}
       <h1 className="text-3xl font-bold text-center text-red-600 mb-6">
-        Hi {profile?.name}, Welcome to Your Blood Donation Dashboard🩸
+         <span className="text-blue-500"> Hi {profile?.name}, </span> Welcome to Your Blood Donation Dashboard🩸
       </h1>
 
       {/* ✅ Show requests if available */}
@@ -126,7 +126,7 @@ const Dashboard = () => {
 
                       {/* ✅ View */}
                       <Link
-                        to={`/request/${req._id}`}
+                        to={`/dashboard/view-request/${req._id}`}
                         className="btn btn-sm btn-info"
                       >
                         View
