@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { AuthContext } from "../context/AuthProvider";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const Dashboard = () => {
   const { user, serverApi } = useContext(AuthContext);
@@ -45,6 +46,29 @@ const Dashboard = () => {
     },
   });
 
+  const handleDelete = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This request will be permanently deleted!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteRequestMutation.mutate(id, {
+          onSuccess: () => {
+            Swal.fire("Deleted!", "The request has been deleted.", "success");
+          },
+          onError: () => {
+            Swal.fire("Error!", "Failed to delete request.", "error");
+          },
+        });
+      }
+    });
+  };
+
   // ✅ Delete request mutation
   const deleteRequestMutation = useMutation({
     mutationFn: async (id) => {
@@ -63,7 +87,7 @@ const Dashboard = () => {
     <div className="p-5">
       {/* ✅ Greeting */}
       <h1 className="text-3xl font-bold text-center text-red-600 mb-6">
-         <span className="text-blue-500"> Hi {profile?.name}, </span> Welcome to Your Blood Donation Dashboard🩸
+        <span className="text-blue-500"> Hi {profile?.name}, </span> Welcome to Your Blood Donation Dashboard🩸
       </h1>
 
       {/* ✅ Show requests if available */}
@@ -74,6 +98,7 @@ const Dashboard = () => {
             <table className="table w-full border">
               <thead className="bg-red-600 text-white">
                 <tr>
+                  <th>Sl</th>
                   <th>Recipient Name</th>
                   <th>Location</th>
                   <th>Date</th>
@@ -85,8 +110,9 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {requests.map((req) => (
+                {requests.map((req, index) => (
                   <tr key={req._id} className="border">
+                    <td>{index+1}</td>
                     <td>{req.recipientName}</td>
                     <td>{req.district}, {req.upazila}</td>
                     <td>{req.donationDate}</td>
@@ -106,7 +132,7 @@ const Dashboard = () => {
                     <td className="space-x-2">
                       {/* ✅ Edit */}
                       <Link
-                        to={`/edit-request/${req._id}`}
+                        to={`/dashboard/edit-request/${req._id}`}
                         className="btn btn-sm btn-warning"
                       >
                         Edit
@@ -114,15 +140,12 @@ const Dashboard = () => {
 
                       {/* ✅ Delete */}
                       <button
-                        className="btn btn-sm btn-error"
-                        onClick={() => {
-                          if (window.confirm("Are you sure to delete this request?")) {
-                            deleteRequestMutation.mutate(req._id);
-                          }
-                        }}
+                        onClick={() => handleDelete(req._id)}
+                        className="btn btn-error btn-sm"
                       >
                         Delete
                       </button>
+
 
                       {/* ✅ View */}
                       <Link

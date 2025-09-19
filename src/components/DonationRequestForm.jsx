@@ -1,25 +1,42 @@
 import { useContext } from "react";
 import DistrictUpazilaSelector from "./DistrictUpazilaSelector";
 import { AuthContext } from "../context/AuthProvider";
+import { useQuery } from "@tanstack/react-query";
 
 export default function DonationRequestForm({
-  mode = "create",       // "create" | "edit" | "view"
-  request = {},          // prefilled data (edit/view)
-  location = { district: "", upazila: "" }, 
-  onLocationChange,      // handler for location
-  onSubmit,              // callback for submit
-  submitting = false,    // loading state
+  mode = "view",       // "create" | "edit" | "view"
+  request = {},        // prefilled data (edit/view)
+  location = { district: "", upazila: "" },
+  onLocationChange,    // handler for location
+  onSubmit,            // callback for submit
+  submitting = false,  // loading state
 }) {
-  const { user } = useContext(AuthContext);
+  const { user, serverApi } = useContext(AuthContext);
   const readOnly = mode === "view";
+
+  const {
+    data: profile,
+    isLoading: profileLoading,
+    error: profileError,
+  } = useQuery({
+    queryKey: ["user", user?.email],
+    queryFn: async () => {
+      if (!user?.email) return null; // avoid fetch if no user
+      const res = await fetch(`${serverApi}/api/users/${user.email}`);
+      if (!res.ok) throw new Error("Failed to fetch user profile");
+      return res.json();
+    },
+    enabled: !!user?.email, // only run if email exists
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (onSubmit && mode !== "view") {
       const form = e.target;
       const payload = {
-        requesterName: request?.requesterName || user?.displayName || "Anonymous",
-        requesterEmail: request?.requesterEmail || user?.email || "N/A",
+        requesterName: request?.requesterName || profile?.name,
+        // question: req name vs user name & trim
+        requesterEmail: request?.requesterEmail || user?.email,
         recipientName: form.recipientName.value.trim(),
         recipientMobile: form.recipientMobile.value.trim(),
         district: location.district,
@@ -30,6 +47,7 @@ export default function DonationRequestForm({
         donationDate: form.donationDate.value,
         donationTime: form.donationTime.value,
         requestMessage: form.requestMessage.value.trim(),
+        status: "pending"
       };
       onSubmit(payload, form);
     }
@@ -42,11 +60,14 @@ export default function DonationRequestForm({
         <label className="block font-semibold mb-1">Requester Name</label>
         <input
           type="text"
-          value={request?.requesterName || user?.displayName || ""}
+          value={
+             request?.requesterName || profile?.name
+          }
           className="input input-bordered w-full bg-gray-100"
           readOnly
         />
       </div>
+
       <div>
         <label className="block font-semibold mb-1">Requester Email</label>
         <input
@@ -64,7 +85,8 @@ export default function DonationRequestForm({
           <input
             name="recipientName"
             type="text"
-            defaultValue={request?.recipientName}
+            defaultValue={mode !== "view" ? request?.recipientName : undefined}
+            value={mode === "view" ? request?.recipientName || "" : undefined}
             className="input input-bordered w-full"
             required
             readOnly={readOnly}
@@ -75,7 +97,8 @@ export default function DonationRequestForm({
           <input
             name="recipientMobile"
             type="text"
-            defaultValue={request?.recipientMobile}
+            defaultValue={mode !== "view" ? request?.recipientMobile : undefined}
+            value={mode === "view" ? request?.recipientMobile || "" : undefined}
             className="input input-bordered w-full"
             required
             readOnly={readOnly}
@@ -100,7 +123,8 @@ export default function DonationRequestForm({
         <input
           name="hospital"
           type="text"
-          defaultValue={request?.hospital}
+          defaultValue={mode !== "view" ? request?.hospital : undefined}
+          value={mode === "view" ? request?.hospital || "" : undefined}
           className="input input-bordered w-full"
           required
           readOnly={readOnly}
@@ -111,7 +135,8 @@ export default function DonationRequestForm({
         <input
           name="address"
           type="text"
-          defaultValue={request?.address}
+          defaultValue={mode !== "view" ? request?.address : undefined}
+          value={mode === "view" ? request?.address || "" : undefined}
           className="input input-bordered w-full"
           required
           readOnly={readOnly}
@@ -125,14 +150,15 @@ export default function DonationRequestForm({
           <select
             name="bloodGroup"
             className="select select-bordered w-full"
-            defaultValue={request?.bloodGroup || ""}
+            defaultValue={mode !== "view" ? request?.bloodGroup || "" : undefined}
+            value={mode === "view" ? request?.bloodGroup || "" : undefined}
             disabled={readOnly}
             required
           >
             <option value="" disabled>
               Select Blood Group
             </option>
-            {["A+","A-","B+","B-","AB+","AB-","O+","O-"].map((bg) => (
+            {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((bg) => (
               <option key={bg} value={bg}>{bg}</option>
             ))}
           </select>
@@ -143,7 +169,8 @@ export default function DonationRequestForm({
           <input
             name="donationDate"
             type="date"
-            defaultValue={request?.donationDate}
+            defaultValue={mode !== "view" ? request?.donationDate : undefined}
+            value={mode === "view" ? request?.donationDate || "" : undefined}
             className="input input-bordered w-full"
             required
             readOnly={readOnly}
@@ -154,7 +181,8 @@ export default function DonationRequestForm({
           <input
             name="donationTime"
             type="time"
-            defaultValue={request?.donationTime}
+            defaultValue={mode !== "view" ? request?.donationTime : undefined}
+            value={mode === "view" ? request?.donationTime || "" : undefined}
             className="input input-bordered w-full"
             required
             readOnly={readOnly}
@@ -168,7 +196,8 @@ export default function DonationRequestForm({
         <textarea
           name="requestMessage"
           rows={4}
-          defaultValue={request?.requestMessage}
+          defaultValue={mode !== "view" ? request?.requestMessage : undefined}
+          value={mode === "view" ? request?.requestMessage || "" : undefined}
           className="textarea textarea-bordered w-full"
           required
           readOnly={readOnly}
@@ -186,8 +215,8 @@ export default function DonationRequestForm({
             {submitting
               ? "Submitting..."
               : mode === "create"
-              ? "Submit Request"
-              : "Update Request"}
+                ? "Submit Request"
+                : "Update Request"}
           </button>
           <button
             type="button"

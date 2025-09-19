@@ -25,14 +25,14 @@ const DistrictUpazilaSelector = ({
   onChange,
   disabled,
 }) => {
-  const { serverApi}= useContext(AuthContext)
+  const { serverApi } = useContext(AuthContext)
   const [selectedDistrict, setSelectedDistrict] = useState(defaultDistrict);
   const [selectedUpazila, setSelectedUpazila] = useState(defaultUpazila);
 
   // Fetch districts
   const { data: districts = [], isLoading: loadingDistricts } = useQuery({
     queryKey: ["districts"],
-    queryFn: ()=> fetchDistricts(serverApi),
+    queryFn: () => fetchDistricts(serverApi),
   });
 
   // Fetch upazilas based on district

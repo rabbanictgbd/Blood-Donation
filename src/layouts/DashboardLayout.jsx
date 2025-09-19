@@ -10,6 +10,7 @@ const DashboardLayout = () => {
           <li><a href="/">Home</a></li>
           <li><a href="/dashboard">Dashboard</a></li>
           <li><a href="/dashboard/profile">Profile</a></li>
+          <li><a href="/requests">Request</a></li>
         </ul>
       </aside>
 
