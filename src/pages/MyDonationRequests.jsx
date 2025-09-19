@@ -60,8 +60,8 @@ const MyDonationRequests = () => {
         <p className="text-center text-gray-500">You haven’t made any donation requests yet.</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="table w-full border">
-            <thead className="bg-red-600 text-white">
+          <table className="table w-full">
+            <thead className="bg-red-800 text-white">
               <tr>
                 <th>Recipient</th>
                 <th>Location</th>
@@ -77,7 +77,7 @@ const MyDonationRequests = () => {
               {requests.map((req) => (
                 <tr key={req._id} className="border">
                   <td>{req.recipientName}</td>
-                  <td>{req.recipientDistrict}, {req.recipientUpazila}</td>
+                  <td>{req.district}, {req.upazila}</td>
                   <td>{req.donationDate}</td>
                   <td>{req.donationTime}</td>
                   <td>{req.bloodGroup}</td>

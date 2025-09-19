@@ -17,7 +17,7 @@ export default function CreateRequest() {
 
     console.log("Creating:", payload);
     Swal.fire("Success", "Blood request submitted", "success");
-    // form.reset();
+    form.reset();
     setLocation({ district: "", upazila: "" });
   };
 

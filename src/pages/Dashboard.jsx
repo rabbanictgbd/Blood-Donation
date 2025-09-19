@@ -95,8 +95,8 @@ const Dashboard = () => {
         <div>
           <h2 className="text-xl font-semibold mb-4">My Recent Donation Requests</h2>
           <div className="overflow-x-auto">
-            <table className="table w-full border">
-              <thead className="bg-red-600 text-white">
+            <table className="table w-full border border-red-800">
+              <thead className="bg-red-800 text-white">
                 <tr>
                   <th>Sl</th>
                   <th>Recipient Name</th>

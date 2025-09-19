@@ -40,7 +40,9 @@ export default function DonationRequestForm({
         recipientName: form.recipientName.value.trim(),
         recipientMobile: form.recipientMobile.value.trim(),
         district: location.district,
+        districtName: location.district,
         upazila: location.upazila,
+        upazilaName: location.upazila,
         hospital: form.hospital.value.trim(),
         address: form.address.value.trim(),
         bloodGroup: form.bloodGroup.value,
@@ -61,7 +63,7 @@ export default function DonationRequestForm({
         <input
           type="text"
           value={
-             request?.requesterName || profile?.name
+             request?.requesterName || profile?.name || "Anonymous"
           }
           className="input input-bordered w-full bg-gray-100"
           readOnly
@@ -72,7 +74,7 @@ export default function DonationRequestForm({
         <label className="block font-semibold mb-1">Requester Email</label>
         <input
           type="email"
-          value={request?.requesterEmail || user?.email || ""}
+          value={request?.requesterEmail || user?.email || "Unknown"}
           className="input input-bordered w-full bg-gray-100"
           readOnly
         />
