@@ -1,23 +1,19 @@
 import React from 'react'
 import Home from '../pages/Home'
-import DonationRequests from '../pages/DonationRequests'
 import Blogs from '../pages/Blogs'
 import Login from '../pages/Login'
 import Register from '../pages/Register'
 import Dashboard from '../pages/Dashboard'
 import Profile from '../pages/Profile'
 import { Routes, Route } from 'react-router-dom'
-import Navbar from '../components/Navbar'
-import Footer from '../components/Footer'
 import MainLayout from '../layouts/MainLayout'
 import DashboardLayout from '../layouts/DashboardLayout'
 import PrivateRoutes from './PrivateRoutes'
-import RequestBlood from '../pages/RequestBlood'
 import MyDonationRequests from '../pages/MyDonationRequests'
-import DonationRequestForm from '../components/DonationRequestForm'
 import CreateRequest from '../pages/CreateRequest'
 import ViewRequest from '../pages/ViewRequest'
 import EditRequest from '../pages/EditRequest'
+import AllDonationRequests from '../pages/AllDonationRequests'
 
 const Router = () => {
     return (
@@ -25,7 +21,7 @@ const Router = () => {
             <Routes>
                 <Route element={<MainLayout />} >
                     <Route path="/" element={<Home />} />
-                    <Route path="/donation-requests" element={<DonationRequests />} />
+                    <Route path="/all-donation-requests" element={<AllDonationRequests />} />
                     {/* <Route path="/requests" element={<RequestBlood />} /> */}
                     <Route path="/requests" element={<CreateRequest />} />
                     <Route path="/blogs" element={<Blogs />} />

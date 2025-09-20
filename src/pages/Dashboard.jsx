@@ -20,7 +20,7 @@ const Dashboard = () => {
   });
 
   // ✅ Fetch 3 recent requests
-  const { data: requests = [] } = useQuery({
+  const { data } = useQuery({
     queryKey: ["recentRequests", user?.email],
     queryFn: async () => {
       const res = await fetch(`${serverApi}/api/requests?email=${user?.email}&limit=3`);
@@ -29,6 +29,8 @@ const Dashboard = () => {
     },
     enabled: !!user?.email,
   });
+
+   const requests = data?.requests || [];
 
   // ✅ Update status mutation
   const updateStatusMutation = useMutation({

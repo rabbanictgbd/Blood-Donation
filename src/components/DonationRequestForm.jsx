@@ -49,7 +49,9 @@ export default function DonationRequestForm({
         donationDate: form.donationDate.value,
         donationTime: form.donationTime.value,
         requestMessage: form.requestMessage.value.trim(),
-        status: "pending"
+        status: "pending",
+        donorName: "",
+        donorEmail: "",
       };
       onSubmit(payload, form);
     }

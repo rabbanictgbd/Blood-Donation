@@ -5,42 +5,60 @@ import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import Pagination from "../components/Pagination";
 
-const MyDonationRequests = () => {
+const AllDonationRequests = () => {
   const { user, serverApi } = useContext(AuthContext);
   const queryClient = useQueryClient();
-    const [page, setPage] = useState(1);
-    const limit = 5; // items per page
+  const [page, setPage] = useState(1);
+  const limit = 5; // items per page
 
-  // ✅ Fetch all requests of logged-in user
+  // ✅ Fetch paginated requests
   const { data, isLoading } = useQuery({
-    queryKey: ["allRequests", user?.email],
+    queryKey: ["allRequests", page],
     queryFn: async () => {
-      const res = await fetch(`${serverApi}/api/requests?email=${user?.email}&page=${page}&limit=${limit}`);
-      if (!res.ok) throw new Error("Failed to fetch donation requests");
+      const res = await fetch(
+        `${serverApi}/api/requests?page=${page}&limit=${limit}`
+      );
+      if (!res.ok) throw new Error("Failed to fetch requests");
       return res.json();
     },
-    enabled: !!user?.email,
   });
 
-   const requests = data?.requests || [];
+  // ✅ Extract data safely
+  const requests = data?.requests || [];
   const totalPages = data?.totalPages || 1;
-  // ✅ Update status
+
+  // ✅ Update status mutation
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ id, status }) => {
+    mutationFn: async ({ id, status}) => {
       const res = await fetch(`${serverApi}/api/requests/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status,  }),
       });
       if (!res.ok) throw new Error("Failed to update status");
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["allRequests", user?.email]);
+      queryClient.invalidateQueries(["allRequests"]);
     },
   });
 
-    const handleDelete = (id) => {
+  // ✅ Delete request mutation
+  const deleteRequestMutation = useMutation({
+    mutationFn: async (id) => {
+      const res = await fetch(`${serverApi}/api/requests/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete request");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["allRequests"]);
+    },
+  });
+
+  // ✅ Handle delete with SweetAlert
+  const handleDelete = (id) => {
     Swal.fire({
       title: "Are you sure?",
       text: "This request will be permanently deleted!",
@@ -63,33 +81,21 @@ const MyDonationRequests = () => {
     });
   };
 
-  // ✅ Delete request mutation
-  const deleteRequestMutation = useMutation({
-    mutationFn: async (id) => {
-      const res = await fetch(`${serverApi}/api/requests/${id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Failed to delete request");
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["recentRequests", user?.email]);
-    },
-  });
-
-  if (isLoading) return <p className="text-center text-gray-500">Loading requests...</p>;
+  if (isLoading) {
+    return <p className="text-center text-gray-500">Loading requests...</p>;
+  }
 
   return (
     <div className="p-5">
       <h1 className="text-2xl font-bold text-red-600 mb-6 text-center">
-        My Donation Requests 🩸
+        All Donation Requests 🩸
       </h1>
 
       {requests.length === 0 ? (
-        <p className="text-center text-gray-500">You haven’t made any donation requests yet.</p>
+        <p className="text-center text-gray-500">No donation request found yet.</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="table w-full">
+          <table className="table w-full border">
             <thead className="bg-red-800 text-white">
               <tr>
                 <th>Sl</th>
@@ -106,15 +112,17 @@ const MyDonationRequests = () => {
             <tbody>
               {requests.map((req, i) => (
                 <tr key={req._id} className="border">
-                  <td>{i+1}</td>
+                  <td>{(page - 1) * limit + i + 1}</td>
                   <td>{req.recipientName}</td>
-                  <td>{req.district}, {req.upazila}</td>
+                  <td>
+                    {req.district}, {req.upazila}
+                  </td>
                   <td>{req.donationDate}</td>
                   <td>{req.donationTime}</td>
                   <td>{req.bloodGroup}</td>
                   <td className="capitalize">{req.status}</td>
                   <td>
-                    {req.status === "inprogress" ? (
+                    {req.status === "inprogress" || req.status === "done" ? (
                       <div>
                         <p>{req.donorName}</p>
                         <p>{req.donorEmail}</p>
@@ -134,11 +142,11 @@ const MyDonationRequests = () => {
 
                     {/* ✅ Delete */}
                     <button
-                        onClick={() => handleDelete(req._id)}
-                        className="btn btn-error btn-sm"
-                      >
-                        Delete
-                      </button>
+                      onClick={() => handleDelete(req._id)}
+                      className="btn btn-error btn-sm"
+                    >
+                      Delete
+                    </button>
 
                     {/* ✅ View */}
                     <Link
@@ -154,7 +162,10 @@ const MyDonationRequests = () => {
                         <button
                           className="btn btn-sm btn-success"
                           onClick={() =>
-                            updateStatusMutation.mutate({ id: req._id, status: "done" })
+                            updateStatusMutation.mutate({
+                              id: req._id,
+                              status: "done",
+                            })
                           }
                         >
                           Done
@@ -162,7 +173,10 @@ const MyDonationRequests = () => {
                         <button
                           className="btn btn-sm btn-secondary"
                           onClick={() =>
-                            updateStatusMutation.mutate({ id: req._id, status: "canceled" })
+                            updateStatusMutation.mutate({
+                              id: req._id,
+                              status: "canceled",
+                            })
                           }
                         >
                           Cancel
@@ -174,16 +188,17 @@ const MyDonationRequests = () => {
               ))}
             </tbody>
           </table>
-           {/* ✅ Pagination */}
-                    <Pagination
-                      currentPage={page}
-                      totalPages={totalPages}
-                      onPageChange={setPage}
-                    />
+
+          {/* ✅ Pagination */}
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
         </div>
       )}
     </div>
   );
 };
 
-export default MyDonationRequests;
+export default AllDonationRequests;
