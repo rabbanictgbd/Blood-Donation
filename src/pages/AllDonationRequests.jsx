@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 import Pagination from "../components/Pagination";
 
 const AllDonationRequests = () => {
-  const { user, serverApi } = useContext(AuthContext);
+  const { role, serverApi } = useContext(AuthContext);
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const limit = 5; // items per page
@@ -27,13 +27,14 @@ const AllDonationRequests = () => {
   const requests = data?.requests || [];
   const totalPages = data?.totalPages || 1;
 
+
   // ✅ Update status mutation
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ id, status}) => {
+    mutationFn: async ({ id, status }) => {
       const res = await fetch(`${serverApi}/api/requests/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status,  }),
+        body: JSON.stringify({ status, }),
       });
       if (!res.ok) throw new Error("Failed to update status");
       return res.json();
@@ -132,23 +133,7 @@ const AllDonationRequests = () => {
                     )}
                   </td>
                   <td className="space-x-2">
-                    {/* ✅ Edit */}
-                    <Link
-                      to={`/dashboard/edit-request/${req._id}`}
-                      className="btn btn-sm btn-warning"
-                    >
-                      Edit
-                    </Link>
-
-                    {/* ✅ Delete */}
-                    <button
-                      onClick={() => handleDelete(req._id)}
-                      className="btn btn-error btn-sm"
-                    >
-                      Delete
-                    </button>
-
-                    {/* ✅ View */}
+                    {/* ✅ Everyone can view */}
                     <Link
                       to={`/dashboard/view-request/${req._id}`}
                       className="btn btn-sm btn-info"
@@ -156,8 +141,58 @@ const AllDonationRequests = () => {
                       View
                     </Link>
 
-                    {/* ✅ Status Update */}
-                    {req.status === "inprogress" && (
+                    {/* ✅ Admin actions */}
+                    {role === "admin" && (
+                      <>
+                        <Link
+                          to={`/dashboard/edit-request/${req._id}`}
+                          className="btn btn-sm btn-warning"
+                        >
+                          Edit
+                        </Link>
+
+                        <button
+                          onClick={() => handleDelete(req._id)}
+                          className="btn btn-error btn-sm"
+                        >
+                          Delete
+                        </button>
+
+                        {req.status === "inprogress" && (
+                          <>
+                            <button
+                              className="btn btn-sm btn-success"
+                              onClick={() =>
+                                updateStatusMutation.mutate({
+                                  id: req._id,
+                                  status: "done",
+                                  donorName: req.donorName,
+                                  donorEmail: req.donorEmail,
+                                })
+                              }
+                            >
+                              Done
+                            </button>
+                            <button
+                              className="btn btn-sm btn-secondary"
+                              onClick={() =>
+                                updateStatusMutation.mutate({
+                                  id: req._id,
+                                  status: "canceled",
+                                  donorName: req.donorName,
+                                  donorEmail: req.donorEmail,
+                                })
+                              }
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        )}
+                      </>
+                    )}
+
+                    {/* ✅ Volunteer actions */}
+                    {role === "volunteer" && req.status === "inprogress" && (
                       <>
                         <button
                           className="btn btn-sm btn-success"
@@ -165,6 +200,8 @@ const AllDonationRequests = () => {
                             updateStatusMutation.mutate({
                               id: req._id,
                               status: "done",
+                              donorName: req.donorName,
+                              donorEmail: req.donorEmail,
                             })
                           }
                         >
@@ -176,6 +213,8 @@ const AllDonationRequests = () => {
                             updateStatusMutation.mutate({
                               id: req._id,
                               status: "canceled",
+                              donorName: req.donorName,
+                              donorEmail: req.donorEmail,
                             })
                           }
                         >
@@ -184,6 +223,8 @@ const AllDonationRequests = () => {
                       </>
                     )}
                   </td>
+
+
                 </tr>
               ))}
             </tbody>
