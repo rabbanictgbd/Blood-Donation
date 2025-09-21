@@ -15,6 +15,8 @@ import ViewRequest from '../pages/ViewRequest'
 import EditRequest from '../pages/EditRequest'
 import AllDonationRequests from '../pages/AllDonationRequests'
 import AllUsers from '../pages/AllUsers'
+import ContentManagement from '../pages/ContentManagement'
+import AddBlog from '../pages/AddBlog'
 
 const Router = () => {
     return (
@@ -37,6 +39,8 @@ const Router = () => {
                         <Route path="/dashboard/edit-request/:id" element={<EditRequest />} />
                         <Route path="/my-donation-requests" element={<MyDonationRequests />} />
                         <Route path="/all-users" element={<AllUsers />} />
+                        <Route path="/dashboard/content-management" element={<ContentManagement />} />
+                        <Route path="/dashboard/content-management/add-blog" element={<AddBlog />} />
                     </Route>
                 </Route>
             </Routes>

@@ -14,6 +14,8 @@ const DashboardLayout = () => {
           <li><a href="/my-donation-requests">My Requests</a></li>
           <li><a href="/all-donation-requests">All Requests</a></li>
           <li><a href="/all-users">All Users</a></li>
+          <li><a href="/dashboard/content-management">Blogs</a></li>
+          <li><a href="/dashboard/content-management/add-blog">Add blog</a></li>
         </ul>
       </aside>
 
