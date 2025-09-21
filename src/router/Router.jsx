@@ -14,6 +14,7 @@ import CreateRequest from '../pages/CreateRequest'
 import ViewRequest from '../pages/ViewRequest'
 import EditRequest from '../pages/EditRequest'
 import AllDonationRequests from '../pages/AllDonationRequests'
+import AllUsers from '../pages/AllUsers'
 
 const Router = () => {
     return (
@@ -35,6 +36,7 @@ const Router = () => {
                         <Route path="/dashboard/view-request/:id" element={<ViewRequest />} />
                         <Route path="/dashboard/edit-request/:id" element={<EditRequest />} />
                         <Route path="/my-donation-requests" element={<MyDonationRequests />} />
+                        <Route path="/all-users" element={<AllUsers />} />
                     </Route>
                 </Route>
             </Routes>

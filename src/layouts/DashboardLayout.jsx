@@ -13,6 +13,7 @@ const DashboardLayout = () => {
           <li><a href="/requests">Request</a></li>
           <li><a href="/my-donation-requests">My Requests</a></li>
           <li><a href="/all-donation-requests">All Requests</a></li>
+          <li><a href="/all-users">All Users</a></li>
         </ul>
       </aside>
 

@@ -65,8 +65,8 @@ export default function AuthProvider({ children }) {
   //Server api
   const localServer= "http://localhost:3000"
   const vercelServer= "https://b11a12-server-side-rabbanictgbd.vercel.app"
-  // const serverApi= localServer
-  const serverApi= vercelServer
+  const serverApi= localServer
+  // const serverApi= vercelServer
 
   return (
     <AuthContext.Provider value={{ user, role, loading, register, login, logout, serverApi }}>

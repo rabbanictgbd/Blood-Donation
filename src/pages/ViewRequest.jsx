@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import DonationRequestForm from "../components/DonationRequestForm";
 import { useContext } from "react";
@@ -9,8 +9,9 @@ export default function ViewRequest() {
   const { id } = useParams(); // URL param /view-request/:id
   const { serverApi, user } = useContext(AuthContext);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
-    const {
+  const {
     data: profile,
     isLoading: profileLoading,
     error: profileError,
@@ -51,13 +52,33 @@ export default function ViewRequest() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["request", id]); // refetch updated request
+      queryClient.invalidateQueries(["request", id]);
       Swal.fire("Success!", "You are now assigned as donor.", "success");
+      navigate("/dashboard");
     },
     onError: () => {
       Swal.fire("Error!", "Failed to update status.", "error");
     },
   });
+
+  // ✅ Confirmation wrapper
+  const handleDonate = async () => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to confirm this donation?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, confirm",
+      cancelButtonText: "No, cancel",
+    });
+
+    if (result.isConfirmed) {
+      updateStatusMutation.mutate(); // run mutation only if confirmed
+    }
+  };
+
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error loading request</p>;
@@ -68,17 +89,17 @@ export default function ViewRequest() {
         mode="view"
         request={request}
         location={{ district: request?.district, upazila: request?.upazila }}
-        onLocationChange={() => {}}
+        onLocationChange={() => { }}
       />
       <br />
       <button
-        className="btn btn-accent"
-        type="button"
-        onClick={() => updateStatusMutation.mutate()}
-        disabled={request?.status !== "pending"} // disable if not pending
+        onClick={handleDonate}
+        className="btn btn-error"
+        disabled={updateStatusMutation.isLoading}
       >
-        Donate
+        {updateStatusMutation.isLoading ? "Processing..." : "Donate"}
       </button>
+
     </div>
   );
 }
