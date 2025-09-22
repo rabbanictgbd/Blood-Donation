@@ -1,6 +1,5 @@
-import { useState, useEffect, useContext, useCallback } from "react";
+import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthProvider";
-import DistrictUpazilaSelector from "../components/DistrictUpazilaSelector";
 
 const DonorSearch = () => {
   const { serverApi } = useContext(AuthContext);
@@ -11,10 +10,13 @@ const DonorSearch = () => {
     district: "",
     upazila: "",
   });
+
   const [donors, setDonors] = useState([]);
   const [loading, setLoading] = useState(false);
+
   const [districts, setDistricts] = useState([]);
   const [upazilas, setUpazilas] = useState([]);
+  const [selectedDistrictId, setSelectedDistrictId] = useState("");
 
   // Fetch districts on mount
   useEffect(() => {
@@ -23,21 +25,26 @@ const DonorSearch = () => {
       .then((data) => setDistricts(data));
   }, [serverApi]);
 
-  // Fetch upazilas when district changes
+  // Fetch upazilas when selected district changes
   useEffect(() => {
-    if (!filters.district) {
+    if (!selectedDistrictId) {
       setUpazilas([]);
       return;
     }
-    fetch(`${serverApi}/api/upazilas/${filters.district}`)
+    fetch(`${serverApi}/api/upazilas/${selectedDistrictId}`)
       .then((res) => res.json())
       .then((data) => setUpazilas(data));
-  }, [filters.district, serverApi]);
+  }, [selectedDistrictId, serverApi]);
 
+  // Handle search button click
   const handleSearch = async () => {
     setLoading(true);
     setDonors([]);
-    const query = new URLSearchParams(filters).toString();
+
+    const query = new URLSearchParams(
+      Object.fromEntries(Object.entries(filters).filter(([_, v]) => v))
+    ).toString();
+
     try {
       const res = await fetch(`${serverApi}/api/users?${query}`);
       const data = await res.json();
@@ -45,8 +52,13 @@ const DonorSearch = () => {
     } catch (err) {
       console.error(err);
     }
+
     setLoading(false);
   };
+
+  // Helper functions to get names from IDs
+  const getDistrictName = (id) => districts.find((d) => d.id === id)?.name || "";
+  const getUpazilaName = (id) => upazilas.find((u) => u.id === id)?.name || "";
 
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -61,9 +73,7 @@ const DonorSearch = () => {
           <label className="font-semibold mb-1">Blood Group</label>
           <select
             value={filters.bloodGroup}
-            onChange={(e) =>
-              setFilters({ ...filters, bloodGroup: e.target.value })
-            }
+            onChange={(e) => setFilters({ ...filters, bloodGroup: e.target.value })}
             className="select select-bordered"
           >
             <option value="">Select Blood Group</option>
@@ -75,51 +85,47 @@ const DonorSearch = () => {
           </select>
         </div>
 
-        {/* District + Upazila */}
-        <div className="flex gap-2">
-          <div className="flex flex-col">
-            <label className="font-semibold mb-1">District</label>
-            <select
-              value={filters.district}
-              onChange={(e) =>
-                setFilters({ ...filters, district: e.target.value, upazila: "" })
-              }
-              className="select select-bordered"
-            >
-              <option value="">Select District</option>
-              {districts.map((d) => (
-                <option key={d._id} value={d._id}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
-          </div>
+        {/* District */}
+        <div className="flex flex-col">
+          <label className="font-semibold mb-1">District</label>
+          <select
+            value={selectedDistrictId}
+            onChange={(e) => {
+              const districtId = e.target.value;
+              setSelectedDistrictId(districtId);
+              setFilters({ ...filters, district: districtId, upazila: "" });
+            }}
+            className="select select-bordered"
+          >
+            <option value="">Select District</option>
+            {districts.map((d) => (
+              <option key={d._id} value={d.id}>
+                {d.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-          <div className="flex flex-col">
-            <label className="font-semibold mb-1">Upazila</label>
-            <select
-              value={filters.upazila}
-              onChange={(e) =>
-                setFilters({ ...filters, upazila: e.target.value })
-              }
-              className="select select-bordered"
-            >
-              <option value="">Select Upazila</option>
-              {upazilas.map((u) => (
-                <option key={u._id} value={u._id}>
-                  {u.name}
-                </option>
-              ))}
-            </select>
-          </div>
+        {/* Upazila */}
+        <div className="flex flex-col">
+          <label className="font-semibold mb-1">Upazila</label>
+          <select
+            value={filters.upazila}
+            onChange={(e) => setFilters({ ...filters, upazila: e.target.value })}
+            className="select select-bordered"
+          >
+            <option value="">Select Upazila</option>
+            {upazilas.map((u) => (
+              <option key={u._id} value={u.id}>
+                {u.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Search Button */}
         <div className="flex flex-col justify-end">
-          <button
-            onClick={handleSearch}
-            className="btn btn-error text-white"
-          >
+          <button onClick={handleSearch} className="btn btn-error text-white">
             Search
           </button>
         </div>
@@ -135,18 +141,24 @@ const DonorSearch = () => {
           {donors.map((donor) => (
             <div key={donor._id} className="card bg-base-100 shadow-lg">
               <figure>
-                <img
-                  src={donor.image || "https://i.pravatar.cc/100"}
-                  alt={donor.name}
-                  className="h-48 w-full object-cover"
-                />
+                {donor.image ? (
+                  <img
+                    src={donor.image}
+                    alt={donor.name}
+                    className="h-48 w-full object-cover"
+                  />
+                ) : (
+                  <div className="h-48 w-full flex items-center justify-center bg-gray-200 text-gray-500">
+                    No Image
+                  </div>
+                )}
               </figure>
               <div className="card-body">
                 <h3 className="card-title">{donor.name}</h3>
                 <p>Email: {donor.email}</p>
                 <p>Blood Group: {donor.bloodGroup}</p>
                 <p>
-                  Location: {donor.district}, {donor.upazila}
+                  Location: {getDistrictName(donor.district)}, {getUpazilaName(donor.upazila)}
                 </p>
               </div>
             </div>
