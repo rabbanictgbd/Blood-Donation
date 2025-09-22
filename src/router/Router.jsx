@@ -1,6 +1,5 @@
 import React from 'react'
 import Home from '../pages/Home'
-import Blogs from '../pages/Blogs'
 import Login from '../pages/Login'
 import Register from '../pages/Register'
 import Dashboard from '../pages/Dashboard'
@@ -17,6 +16,9 @@ import AllDonationRequests from '../pages/AllDonationRequests'
 import AllUsers from '../pages/AllUsers'
 import ContentManagement from '../pages/ContentManagement'
 import AddBlog from '../pages/AddBlog'
+import BlogDetails from '../pages/BlogDetails'
+import Blogs from '../pages/Blogs'
+import DonorSearch from '../pages/DonorSearch'
 
 const Router = () => {
     return (
@@ -28,8 +30,10 @@ const Router = () => {
                     {/* <Route path="/requests" element={<RequestBlood />} /> */}
                     <Route path="/requests" element={<CreateRequest />} />
                     <Route path="/blogs" element={<Blogs />} />
+                    <Route path="/blogs/:id" element={<BlogDetails />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/search" element={<DonorSearch />} />
                 </Route>
                 <Route element={<PrivateRoutes/>}>
                     <Route element={<DashboardLayout />}>
