@@ -5,12 +5,15 @@ import LeftSide from "../components/LeftSide";
 const DashboardLayout = () => {
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
-    <LeftSide></LeftSide>
+      <LeftSide />
+
       {/* Main Content */}
-      <main className="flex-1 p-6 bg-gray-100">
-      
+      <main className="flex-1  ">
+        <Topbar />
+        <div className="pl-6 ml-6">
+
         <Outlet />
+        </div>
       </main>
     </div>
   );

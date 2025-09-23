@@ -3,7 +3,7 @@ import { AuthContext } from "../context/AuthProvider";
 import { Link } from "react-router-dom";
 
 const Topbar = () => {
-  const { user, logOut } = useContext(AuthContext);
+  const {profile, user, logOut } = useContext(AuthContext);
 
   const handleLogout = async () => {
     try {
@@ -29,12 +29,12 @@ const Topbar = () => {
             <div className="avatar">
               <div className="w-10 rounded-full border-2 border-white">
                 <img
-                  src={user?.image || "https://i.ibb.co/6b0L4qV/avatar.png"}
+                  src={profile?.image}
                   alt="avatar"
                 />
               </div>
             </div>
-            <span className="font-medium hidden sm:block">{user?.name || "Guest"}</span>
+            <span className="font-medium hidden sm:block">{profile?.name || "Guest"}</span>
           </div>
 
           <ul
@@ -44,9 +44,9 @@ const Topbar = () => {
             <li>
               <Link to="/profile">👤 Profile</Link>
             </li>
-            <li>
+            {/* <li>
               <button onClick={handleLogout}>🚪 Logout</button>
-            </li>
+            </li> */}
           </ul>
         </div>
       </div>
