@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import Features from "../components/Features";
+import ContactUs from "../components/ContactUs";
 
 export default function Home() {
   return (
@@ -27,13 +29,11 @@ export default function Home() {
 
       {/* Placeholder Sections */}
       <section className="py-10 px-5 text-center">
-        <h2 className="text-2xl font-semibold mb-4">🌟 Featured Section</h2>
-        <p className="text-gray-500">Content coming soon...</p>
+        <Features></Features>
       </section>
 
       <section className="py-10 px-5 text-center bg-base-100">
-        <h2 className="text-2xl font-semibold mb-4">📞 Contact Us</h2>
-        <p className="text-gray-500">Contact details will appear here...</p>
+        <ContactUs></ContactUs>
       </section>
     </div>
   );
