@@ -3,9 +3,10 @@ import { AuthContext } from "../context/AuthProvider";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import AdminStats from "../components/AdminStats";
 
 const Dashboard = () => {
-  const { user, serverApi } = useContext(AuthContext);
+  const { role, user, serverApi } = useContext(AuthContext);
   const queryClient = useQueryClient();
 
   // ✅ Fetch donor profile
@@ -30,7 +31,7 @@ const Dashboard = () => {
     enabled: !!user?.email,
   });
 
-   const requests = data?.requests || [];
+  const requests = data?.requests || [];
 
   // ✅ Update status mutation
   const updateStatusMutation = useMutation({
@@ -91,6 +92,11 @@ const Dashboard = () => {
       <h1 className="text-3xl font-bold text-center text-red-600 mb-6">
         <span className="text-blue-500"> Hi {profile?.name}, </span> Welcome to Your Blood Donation Dashboard🩸
       </h1>
+      {role === "admin" && (
+        <div>
+          <AdminStats></AdminStats>
+        </div>
+      )}
 
       {/* ✅ Show requests if available */}
       {requests.length > 0 && (
@@ -114,7 +120,7 @@ const Dashboard = () => {
               <tbody>
                 {requests.map((req, index) => (
                   <tr key={req._id} className="border">
-                    <td>{index+1}</td>
+                    <td>{index + 1}</td>
                     <td>{req.recipientName}</td>
                     <td>{req.district}, {req.upazila}</td>
                     <td>{req.donationDate}</td>
@@ -193,6 +199,7 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+
     </div>
   );
 };
