@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import {
   AiOutlineHome,
   AiOutlineUser,
@@ -23,27 +23,29 @@ const menuItems = [
 
 const LeftSide = () => {
   return (
-    <aside className="bg-red-900 text-white h-screen fixed lg:relative w-16 lg:w-64 transition-all duration-300">
+    <aside className="bg-red-900 text-white min-h-screen fixed lg:relative w-16 lg:w-64 transition-all duration-300">
       {/* Desktop: full sidebar */}
       <div className="hidden lg:block p-5">
         <h2 className="text-xl font-bold mb-4">Dashboard</h2>
         <ul className="space-y-3">
           {menuItems.map((item) => (
             <li key={item.name}>
-              <Link
+              <NavLink
                 to={item.path}
-                className="flex items-center gap-2 p-2 hover:bg-red-800 rounded"
+                className={({ isActive })=>
+                `flex items-center gap-2 p-2 ${isActive ? "bg-red-800" :  "hover:bg-red-700 rounded"}`
+                }
               >
                 {item.icon}
                 <span>{item.name}</span>
-              </Link>
+              </NavLink>
             </li>
           ))}
         </ul>
       </div>
 
       {/* Mobile: only icons */}
-      <div className="lg:hidden flex flex-col p-4 space-y-4">
+      <div className="lg:hidden flex flex-col min-h-screen p-4 space-y-4">
         {menuItems.map((item) => (
           <Link
             key={item.name}

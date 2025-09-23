@@ -4,7 +4,7 @@ import LeftSide from "../components/LeftSide";
 
 const DashboardLayout = () => {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex">
       <LeftSide />
 
       {/* Main Content */}
