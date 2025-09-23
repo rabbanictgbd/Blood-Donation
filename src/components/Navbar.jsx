@@ -43,7 +43,7 @@ export default function Navbar() {
   };
 
   const navItems = navConfig[role || "guest"];
-  
+
   const handleLogout = () => {
     logout()
   }
@@ -80,7 +80,7 @@ export default function Navbar() {
             <li>
               <div className="dropdown dropdown-hover dropdown-end">
                 <label tabIndex={0} className="">
-                  <img className="w-7 rounded-full cursor-pointer" src={profile?.image} alt="NoImg" />
+                  <img className="w-10 h-10 rounded-full cursor-pointer" src={profile?.image} alt="NoImg" />
                 </label>
                 <ul
                   tabIndex={0}

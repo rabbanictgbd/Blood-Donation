@@ -83,7 +83,7 @@ export default function Register() {
       // Firebase user creation
       await register(email, password);
       Swal.fire("Success", "Registration successful! You can now login.", "success");
-      // navigate("/login");
+      navigate("/login");
     } catch (err) {
       Swal.fire("Error", err.message, "error");
     }
