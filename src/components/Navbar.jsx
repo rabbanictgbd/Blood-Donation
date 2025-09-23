@@ -3,7 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import { AuthContext } from "../context/AuthProvider"; // adjust path
 
 export default function Navbar() {
-  const { user, role, logout } = useContext(AuthContext); // role will come from backend
+  const {profile, user, role, logout } = useContext(AuthContext); // role will come from backend
   const [menuOpen, setMenuOpen] = useState(false);
 
   // Nav items based on role
@@ -22,7 +22,7 @@ export default function Navbar() {
       { path: "/requests", label: "Blood Request" },
       { path: "/all-donation-requests", label: "All Requests" },
       { path: "/dashboard", label: "Donor Dashboard" },
-      { path: "/login", label: "Login" },
+
     ],
     volunteer: [
       { path: "/", label: "Home" },
@@ -30,7 +30,7 @@ export default function Navbar() {
       { path: "/requests", label: "Blood Request" },
       { path: "/all-donation-requests", label: "All Requests" },
       { path: "/dashboard", label: "Volunteer Dashboard" },
-      { path: "/login", label: "Login" },
+
     ],
     admin: [
       { path: "/", label: "Home" },
@@ -38,11 +38,12 @@ export default function Navbar() {
       { path: "/requests", label: "Blood Request" },
       { path: "/all-donation-requests", label: "All Requests" },
       { path: "/dashboard", label: "Admin Dashboard" },
-      { path: "/login", label: "Login" },
+    
     ],
   };
 
   const navItems = navConfig[role || "guest"];
+  
   const handleLogout = () => {
     logout()
   }
@@ -78,8 +79,8 @@ export default function Navbar() {
           {user && (
             <li>
               <div className="dropdown dropdown-hover dropdown-end">
-                <label tabIndex={0} className="btn btn-sm btn-error text-white m-1 cursor-pointer">
-                  {user.email}
+                <label tabIndex={0} className="">
+                  <img className="w-7 rounded-full cursor-pointer" src={profile?.image} alt="NoImg" />
                 </label>
                 <ul
                   tabIndex={0}

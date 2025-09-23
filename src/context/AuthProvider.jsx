@@ -69,7 +69,7 @@ export default function AuthProvider({ children }) {
   // const serverApi= vercelServer
 
   return (
-    <AuthContext.Provider value={{ user, role, loading, register, login, logout, serverApi }}>
+    <AuthContext.Provider value={{ profile, user, role, loading, register, login, logout, serverApi }}>
       {children}
     </AuthContext.Provider>
   );
