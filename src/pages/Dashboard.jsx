@@ -146,7 +146,7 @@ const Dashboard = () => {
                         "-"
                       )}
                     </td>
-                    <td className="space-x-2">
+                    <td className="space-x-2 space-y-1">
                       <Link
                         to={`/dashboard/edit-request/${req._id}`}
                         className="btn btn-sm btn-warning"

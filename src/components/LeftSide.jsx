@@ -25,7 +25,7 @@ const LeftSide = () => {
   return (
     <aside className="bg-red-900 text-white min-h-screen fixed lg:relative w-16 lg:w-64 transition-all duration-300">
       {/* Desktop: full sidebar */}
-      <div className="hidden lg:block p-5">
+      <div className="hidden lg:block sticky top-0 z-50 p-5">
         <h2 className="text-xl font-bold mb-4">Dashboard</h2>
         <ul className="space-y-3">
           {menuItems.map((item) => (

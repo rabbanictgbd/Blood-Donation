@@ -89,7 +89,7 @@ const AllUsers = () => {
       <h1 className="text-2xl font-bold text-center mb-6">👥 All Users</h1>
 
       {/* ✅ Filter */}
-      <div className="mb-4 flex justify-end space-x-2">
+      <div className="mb-4 flex justify-end space-x-2 space-y-1">
         <select
           className="select select-bordered"
           value={statusFilter}

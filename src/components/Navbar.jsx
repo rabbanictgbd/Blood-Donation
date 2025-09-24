@@ -49,7 +49,7 @@ export default function Navbar() {
   }
 
   return (
-    <div className="navbar bg-base-100 shadow-md px-5">
+    <div className="navbar bg-base-100 sticky top-0 z-50 shadow-md px-5">
       {/* Logo Left */}
       <div className="flex-1">
         <Link to="/" className="text-2xl font-bold text-red-600">

@@ -42,7 +42,7 @@ const Topbar = () => {
             className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-white text-gray-700 rounded-box w-52"
           >
             <li>
-              <Link to="/profile">👤 Profile</Link>
+              <Link to="dashboard/profile">👤 Profile</Link>
             </li>
             {/* <li>
               <button onClick={handleLogout}>🚪 Logout</button>

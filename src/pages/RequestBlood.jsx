@@ -221,7 +221,7 @@ export default function RequestBlood() {
                 </div>
 
                 {/* Buttons */}
-                <div className="flex space-x-2">
+                <div className="flex space-x-2 space-y-1">
                     <button
                         type="submit"
                         className="btn btn-error text-white"

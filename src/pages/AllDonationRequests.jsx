@@ -152,7 +152,7 @@ const AllDonationRequests = () => {
                         "-"
                       )}
                     </td>
-                    <td className="space-x-2">
+                    <td className="space-x-2 space-y-1 ">
                       <Link
                         to={`/dashboard/view-request/${req._id}`}
                         className="btn btn-sm btn-info"

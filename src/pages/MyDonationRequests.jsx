@@ -157,7 +157,7 @@ const MyDonationRequests = () => {
                         "-"
                       )}
                     </td>
-                    <td className="space-x-2">
+                    <td className="space-x-2 space-y-1">
                       {/* Edit */}
                       <Link
                         to={`/dashboard/edit-request/${req._id}`}
