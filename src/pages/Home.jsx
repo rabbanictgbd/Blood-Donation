@@ -35,11 +35,11 @@ export default function Home() {
       </div>
 
       {/* Placeholder Sections */}
-      <section className="py-10 px-5 text-center">
+      <section className="py-10  text-center">
         <Features></Features>
       </section>
 
-      <section className="py-10 px-5 text-center bg-base-100">
+      <section className="py-10  text-center bg-base-100">
         <ContactUs></ContactUs>
       </section>
     </div>
