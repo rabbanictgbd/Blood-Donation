@@ -1,8 +1,12 @@
 import { Link } from "react-router-dom";
 import Features from "../components/Features";
 import ContactUs from "../components/ContactUs";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthProvider";
+
 
 export default function Home() {
+  const {user} = useContext(AuthContext)
   return (
     <div className="w-full">
       {/* Banner */}
@@ -16,9 +20,12 @@ export default function Home() {
               Your contribution can save lives. Join as a donor or search for donors near you.
             </p>
             <div className="flex gap-4 justify-center">
+              {
+                !user?.email &&
               <Link to="/register" className="btn btn-error text-white">
                 Join as Donor
               </Link>
+              }
               <Link to="/search" className="btn btn-outline btn-error">
                 Search Donors
               </Link>
