@@ -18,7 +18,7 @@ const Topbar = () => {
       {/* Website Title */}
       <div className="flex-1">
         <Link to="/" className="text-xl pl-6 ml-6 font-bold">
-          🩸 Blood Donation App
+          🩸 Blood Donation Platform
         </Link>
       </div>
 

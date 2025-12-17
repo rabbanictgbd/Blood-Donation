@@ -7,7 +7,7 @@ const Footer = () => {
         
         {/* Logo / Brand */}
         <div className="text-lg font-bold mb-4 md:mb-0 text-red-200">
-          Blood Donation App
+          Blood Donation Platform
         </div>
 
         {/* Navigation Links */}
@@ -32,7 +32,7 @@ const Footer = () => {
       </div>
 
       <p className="text-center text-red-200 text-sm mt-4">
-        © {new Date().getFullYear()} Blood Donation App. All rights reserved.
+        © {new Date().getFullYear()} Blood Donation Platform. All rights reserved.
       </p>
     </footer>
   );

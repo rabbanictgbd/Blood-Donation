@@ -14,7 +14,7 @@ export default function Home() {
         <div className="hero-content text-center">
           <div className="max-w-xl">
             <h1 className="text-4xl font-bold text-red-600">
-              Welcome to Blood Donation App 🩸
+              Welcome to Blood Donation Platform 🩸
             </h1>
             <p className="py-6 text-gray-600">
               Your contribution can save lives. Join as a donor or search for donors near you.
