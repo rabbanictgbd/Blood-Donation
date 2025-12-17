@@ -52,9 +52,39 @@ const ContactUs = () => {
               Have questions or need assistance? Reach out to us through this form
               or via the details below.
             </p>
-            <p><strong>📍 Address:</strong> South Manda, Mugda, Dhaka, Bangladesh</p>
-            <p><strong>📧 Email:</strong> rabbanictgbd@gmail.com</p>
-            <p><strong>📞 Phone:</strong> +880 1832-786121</p>
+            <p>
+              <strong>📍 Address:</strong>{" "}
+              <a
+                href="https://www.google.com/maps/place/2+Hiru+Miah+Road,+Dhaka+1214/@23.7272045,90.4374206,21z/data=!4m6!3m5!1s0x3755b83a74672ff7:0x907360d8b27d11bf!8m2!3d23.7272596!4d90.4374116!16s%2Fg%2F11gf1rj3n3?entry=ttu&g_ep=EgoyMDI1MTIwOS4wIKXMDSoASAFQAw%3D%3D"
+                // href="https://www.google.com/maps/search/?api=1&query=South+Manda+Mugda+Dhaka+Bangladesh"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                South Manda, Mugda, Dhaka, Bangladesh
+              </a>
+            </p>
+
+            <p>
+              <strong>📧 Email:</strong>{" "}
+              <a
+                href="mailto:rabbanictgbd@gmail.com"
+                className="text-blue-600 hover:underline"
+              >
+                rabbanictgbd@gmail.com
+              </a>
+            </p>
+
+            <p>
+              <strong>📞 Phone:</strong>{" "}
+              <a
+                href="tel:+8801832786121"
+                className="text-blue-600 hover:underline"
+              >
+                +880 1832-786121
+              </a>
+            </p>
+
           </div>
 
           {/* Contact Form */}
